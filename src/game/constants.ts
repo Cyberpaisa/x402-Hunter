@@ -14,7 +14,7 @@ export const PAYMENT_CONFIG = {
   pricePerGame: '0.10',
   pricePerLife: '0.05',
   priceToContinue: '0.15',
-  recipient: '0x209693Bc6afc0C5328bA36FaF03C514EAD62D1B0',
+  recipient: '0x209693BC6afC0C5328bA36FAF03c514eaD62d1B0',
   chain: 'avalanche' as const,
 };
 

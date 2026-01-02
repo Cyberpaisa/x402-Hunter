@@ -145,19 +145,47 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ type, onClose }) => 
 
       setStatus('processing');
 
+      // Decode the payment header
+      const paymentHeader = JSON.parse(atob(result.paymentHeader));
+      console.log('Payment header:', paymentHeader);
+
+      // Build payment requirements as expected by the facilitator
+      // Amount in atomic units (USDC has 6 decimals)
+      const atomicAmount = Math.floor(parseFloat(PAYMENT_AMOUNTS[type]) * 1e6).toString();
+
+      const paymentRequirements = {
+        scheme: 'exact',
+        network: 'avalanche',
+        maxAmountRequired: atomicAmount,
+        resource: window.location.href,
+        description: `x402-Hunter: ${PAYMENT_TITLES[type]}`,
+        mimeType: 'application/json',
+        payTo: PAYMENT_CONFIG.recipient,
+        maxTimeoutSeconds: 300,
+        asset: '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', // USDC on Avalanche
+      };
+
+      // Build the settle request with the correct format
+      const settleRequest = {
+        x402Version: paymentHeader.x402Version,
+        paymentPayload: paymentHeader,
+        paymentRequirements: paymentRequirements,
+      };
+
+      console.log('Settle request:', JSON.stringify(settleRequest, null, 2));
+
       const response = await fetch(`${FACILITATOR_URL}/settle`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-PAYMENT': result.paymentHeader,
         },
-        body: JSON.stringify({
-          paymentHeader: result.paymentHeader,
-        }),
+        body: JSON.stringify(settleRequest),
       });
 
       if (!response.ok) {
-        throw new Error('Payment settlement failed');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Facilitator error:', errorData);
+        throw new Error(errorData.error || 'Payment settlement failed');
       }
 
       setStatus('success');
