@@ -1,4 +1,4 @@
-type SoundName = 'gunshot' | 'duckHit' | 'duckFall' | 'duckEscape' | 'levelUp' | 'gameOver' | 'victory' | 'click' | 'payment' | 'powerUp';
+type SoundName = 'gunshot' | 'duckHit' | 'duckFall' | 'duckEscape' | 'levelUp' | 'gameOver' | 'victory' | 'click' | 'payment' | 'powerUp' | 'healthUp' | 'damage';
 
 let audioContext: AudioContext | null = null;
 let muted = false;
@@ -121,6 +121,18 @@ const soundEffects: Record<SoundName, () => void> = {
     setTimeout(() => playTone(554, 0.1, 'sine', 0.4), 80);
     setTimeout(() => playTone(659, 0.1, 'sine', 0.4), 160);
     setTimeout(() => playTone(880, 0.2, 'sine', 0.5), 240);
+  },
+  healthUp: () => {
+    // Healing/life up sound - pleasant chime
+    playTone(523, 0.15, 'sine', 0.4);
+    setTimeout(() => playTone(784, 0.15, 'sine', 0.4), 100);
+    setTimeout(() => playTone(1047, 0.25, 'sine', 0.5), 200);
+  },
+  damage: () => {
+    // Damage/hurt sound - descending harsh tone
+    playTone(200, 0.2, 'sawtooth', 0.4);
+    setTimeout(() => playTone(150, 0.2, 'sawtooth', 0.3), 100);
+    setTimeout(() => playTone(100, 0.3, 'sawtooth', 0.2), 200);
   },
 };
 

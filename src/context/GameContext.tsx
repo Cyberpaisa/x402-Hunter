@@ -163,10 +163,12 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           // Power-up gives extra life
           newLives = Math.min(newLives + 1, 5); // Max 5 lives
           bonusPoints = 300;
+          sounds.play('healthUp');
         } else {
           // Power-up gives rapid fire
           newRapidFireUntil = Math.max(state.stats.rapidFireUntil, Date.now()) + RAPID_FIRE_DURATION;
           bonusPoints = 500;
+          // powerUp sound already played above
         }
       }
 
@@ -224,6 +226,11 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
       const escapedBadDucks = escapedDucks.filter((d) => d.duckType === 'bad').length;
       const damageFromBadDucks = escapedBadDucks; // Each bad duck that escapes removes 1 life
       const newLives = Math.max(0, state.stats.lives - damageFromBadDucks);
+
+      // Play damage sound if bad ducks escaped
+      if (escapedBadDucks > 0) {
+        sounds.play('damage');
+      }
 
       // Check if game over from bad ducks
       if (newLives <= 0) {

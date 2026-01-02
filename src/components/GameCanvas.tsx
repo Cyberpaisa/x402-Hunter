@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useGame } from '../context/GameContext';
 import { DuckComponent } from './Duck';
 import { HUD } from './HUD';
+import { GameNotifications } from './GameNotifications';
 import { GAME_WIDTH, GAME_HEIGHT } from '../game/constants';
 import './GameCanvas.css';
 
@@ -66,6 +67,7 @@ export const GameCanvas: React.FC = () => {
       </div>
 
       <HUD />
+      <GameNotifications />
     </div>
   );
 };
