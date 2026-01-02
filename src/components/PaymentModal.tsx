@@ -34,8 +34,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ type, onClose }) => 
       setStatus('connecting');
       setError(null);
 
-      const client = new X402Client({ defaultChain: 'base' });
-      const address = await client.connect('base');
+      const client = new X402Client({ defaultChain: PAYMENT_CONFIG.chain });
+      const address = await client.connect(PAYMENT_CONFIG.chain);
       setWallet(address);
 
       setStatus('signing');
@@ -101,7 +101,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ type, onClose }) => 
         </div>
 
         <div className="payment-network">
-          <span className="network-badge">Base Network</span>
+          <span className="network-badge">Avalanche Network</span>
           <span className="network-info">Gasless • Instant</span>
         </div>
 

@@ -63,7 +63,7 @@ export const Menu: React.FC = () => {
 
         <div className="menu-footer">
           <p>Powered by x402 Protocol</p>
-          <p className="footer-link">Gasless payments on Base</p>
+          <p className="footer-link">Gasless payments on Avalanche</p>
         </div>
       </div>
     </div>

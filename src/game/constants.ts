@@ -15,6 +15,7 @@ export const PAYMENT_CONFIG = {
   pricePerLife: '0.05',
   priceToContinue: '0.15',
   recipient: '0x209693Bc6afc0C5328bA36FaF03C514EAD62D1B0',
+  chain: 'avalanche' as const,
 };
 
 export const FACILITATOR_URL = 'https://facilitator.ultravioletadao.xyz';
