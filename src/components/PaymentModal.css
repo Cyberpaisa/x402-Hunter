@@ -88,6 +88,51 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+.wallet-detected {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.wallet-icon {
+  font-size: 16px;
+}
+
+.wallet-name {
+  font-size: 12px;
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.no-wallet {
+  text-align: center;
+}
+
+.no-wallet p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  margin-bottom: 15px;
+}
+
+.core-button {
+  background: linear-gradient(135deg, #e84142 0%, #ff6b6b 100%);
+}
+
+.core-button:hover {
+  box-shadow: 0 10px 30px rgba(232, 65, 66, 0.4);
+}
+
+.wallet-hint {
+  margin-top: 10px !important;
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
 .payment-button {
   width: 100%;
   padding: 16px 32px;
