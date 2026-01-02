@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
 import type { Duck, GameState, GameStats, GameLevel } from '../types/game';
 import { LEVELS, SUCCESS_RATIO } from '../game/levels';
-import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION, POWERUP_HEALTH_CHANCE } from '../game/constants';
+import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION } from '../game/constants';
 import { createDuck, updateDuckPosition, updateFallingDuck, pointDistance, checkDuckEscaped } from '../game/utils';
 import sounds from '../game/sounds';
 
@@ -119,9 +119,9 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
 
       const clickPos = { x: action.x, y: action.y };
       let ducksHit = 0;
-      let hitPowerUp = false;
+      let healthPowerup = false;
+      let rapidFirePowerup = false;
       let hitBadDuck = false;
-      let givesHealth = false;
 
       const updatedDucks = state.ducks.map((duck) => {
         if (duck.state === 'flying') {
@@ -134,9 +134,14 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
 
             // Handle different duck types
             if (duck.duckType === 'powerup') {
-              hitPowerUp = true;
-              givesHealth = Math.random() < POWERUP_HEALTH_CHANCE;
-              sounds.play('powerUp');
+              // Use the pre-determined powerup effect
+              if (duck.powerupEffect === 'health') {
+                healthPowerup = true;
+                sounds.play('healthUp');
+              } else {
+                rapidFirePowerup = true;
+                sounds.play('powerUp');
+              }
             } else if (duck.duckType === 'bad') {
               hitBadDuck = true;
               sounds.play('duckHit');
@@ -158,18 +163,16 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
       let newLives = state.stats.lives;
       let bonusPoints = 0;
 
-      if (hitPowerUp) {
-        if (givesHealth) {
-          // Power-up gives extra life
-          newLives = Math.min(newLives + 1, 5); // Max 5 lives
-          bonusPoints = 300;
-          sounds.play('healthUp');
-        } else {
-          // Power-up gives rapid fire
-          newRapidFireUntil = Math.max(state.stats.rapidFireUntil, Date.now()) + RAPID_FIRE_DURATION;
-          bonusPoints = 500;
-          // powerUp sound already played above
-        }
+      if (healthPowerup) {
+        // Power-up gives extra life
+        newLives = Math.min(newLives + 1, 5); // Max 5 lives
+        bonusPoints += 300;
+      }
+
+      if (rapidFirePowerup) {
+        // Power-up gives rapid fire
+        newRapidFireUntil = Math.max(state.stats.rapidFireUntil, Date.now()) + RAPID_FIRE_DURATION;
+        bonusPoints += 500;
       }
 
       if (hitBadDuck) {

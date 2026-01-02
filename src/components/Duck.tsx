@@ -52,8 +52,13 @@ export const DuckComponent: React.FC<DuckProps> = ({ duck }) => {
         {duck.duckType === 'powerup' && <div className="powerup-glow" />}
         {duck.duckType === 'bad' && <div className="bad-glow" />}
       </div>
-      {/* Visual indicator icons */}
-      {duck.duckType === 'powerup' && <div className="duck-type-icon powerup-icon">⭐</div>}
+      {/* Visual indicator icons - show specific powerup effect */}
+      {duck.duckType === 'powerup' && duck.powerupEffect === 'health' && (
+        <div className="duck-type-icon health-icon">❤️</div>
+      )}
+      {duck.duckType === 'powerup' && duck.powerupEffect === 'rapidfire' && (
+        <div className="duck-type-icon rapidfire-icon">⚡</div>
+      )}
       {duck.duckType === 'bad' && <div className="duck-type-icon bad-icon">💀</div>}
     </div>
   );

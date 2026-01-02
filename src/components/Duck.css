@@ -397,9 +397,16 @@
   pointer-events: none;
 }
 
-.powerup-icon {
-  color: #ffd700;
+.health-icon {
+  color: #ff5252;
+  text-shadow: 0 0 10px #ff5252, 0 0 20px #e91e63;
+  font-size: 22px;
+}
+
+.rapidfire-icon {
+  color: #ffeb3b;
   text-shadow: 0 0 10px #ffd700, 0 0 20px #ff8c00;
+  font-size: 22px;
 }
 
 .bad-icon {

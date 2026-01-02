@@ -5,6 +5,7 @@ export interface Position {
 
 // Duck types: normal (points), powerup (health/rapid fire), bad (damage)
 export type DuckType = 'normal' | 'powerup' | 'bad';
+export type PowerupEffect = 'health' | 'rapidfire';
 
 export interface Duck {
   id: string;
@@ -15,6 +16,7 @@ export interface Duck {
   direction: Direction;
   animationFrame: number;
   duckType: DuckType;
+  powerupEffect?: PowerupEffect; // Only for powerup ducks
 }
 
 export type DuckState = 'flying' | 'shot' | 'falling' | 'escaped';

@@ -1,5 +1,5 @@
-import type { Position, Direction, Duck, DuckState, DuckType } from '../types/game';
-import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, DUCK_TYPE_CHANCES } from './constants';
+import type { Position, Direction, Duck, DuckState, DuckType, PowerupEffect } from '../types/game';
+import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, DUCK_TYPE_CHANCES, POWERUP_HEALTH_CHANCE } from './constants';
 
 export function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -93,6 +93,12 @@ export function createDuck(speed: number, index: number = 0, _total: number = 1,
   // Determine duck type (normal, powerup, or bad)
   const duckType = forcedType || getDuckType();
 
+  // Determine powerup effect at creation time (not when shot)
+  let powerupEffect: PowerupEffect | undefined;
+  if (duckType === 'powerup') {
+    powerupEffect = Math.random() < POWERUP_HEALTH_CHANCE ? 'health' : 'rapidfire';
+  }
+
   return {
     id: generateId(),
     position: { x: startX, y: startY },
@@ -102,6 +108,7 @@ export function createDuck(speed: number, index: number = 0, _total: number = 1,
     direction: getDirection(velocity),
     animationFrame: 0,
     duckType,
+    powerupEffect,
   };
 }
 
