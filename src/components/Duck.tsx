@@ -22,9 +22,20 @@ export const DuckComponent: React.FC<DuckProps> = ({ duck }) => {
 
   if (duck.state === 'escaped') return null;
 
+  const getTypeClass = () => {
+    switch (duck.duckType) {
+      case 'powerup':
+        return 'duck-powerup';
+      case 'bad':
+        return 'duck-bad';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div
-      className={`duck duck-${duck.color} ${getStateClass()} frame-${duck.animationFrame} ${duck.duckType === 'powerup' ? 'duck-powerup' : ''}`}
+      className={`duck duck-${duck.color} ${getStateClass()} ${getTypeClass()} frame-${duck.animationFrame}`}
       style={{
         left: duck.position.x,
         top: duck.position.y,
@@ -39,7 +50,11 @@ export const DuckComponent: React.FC<DuckProps> = ({ duck }) => {
         <div className="duck-wing" />
         <div className="duck-tail" />
         {duck.duckType === 'powerup' && <div className="powerup-glow" />}
+        {duck.duckType === 'bad' && <div className="bad-glow" />}
       </div>
+      {/* Visual indicator icons */}
+      {duck.duckType === 'powerup' && <div className="duck-type-icon powerup-icon">⭐</div>}
+      {duck.duckType === 'bad' && <div className="duck-type-icon bad-icon">💀</div>}
     </div>
   );
 };

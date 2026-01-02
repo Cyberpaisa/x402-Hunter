@@ -93,8 +93,20 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
     case 'SPAWN_DUCKS': {
       const newDucks: Duck[] = [];
       const duckCount = state.currentLevel.ducksPerWave;
+
+      // Ensure variety: at least 1 powerup and 1 bad duck if there are 4+ ducks
+      const guaranteePowerup = duckCount >= 4 ? 1 : 0;
+      const guaranteeBad = duckCount >= 4 ? 1 : 0;
+
       for (let i = 0; i < duckCount; i++) {
-        newDucks.push(createDuck(state.currentLevel.duckSpeed, i, duckCount));
+        // Force duck types for guaranteed variety
+        let forcedType: 'powerup' | 'bad' | null = null;
+        if (i === 0 && guaranteePowerup > 0) {
+          forcedType = 'powerup';
+        } else if (i === 1 && guaranteeBad > 0) {
+          forcedType = 'bad';
+        }
+        newDucks.push(createDuck(state.currentLevel.duckSpeed, i, duckCount, forcedType));
       }
       return { ...state, ducks: newDucks };
     }

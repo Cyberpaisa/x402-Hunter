@@ -42,7 +42,7 @@ function getDuckColor(duckType: DuckType): 'red' | 'blue' | 'green' | 'golden' |
   }
 }
 
-export function createDuck(speed: number, index: number = 0, _total: number = 1): Duck {
+export function createDuck(speed: number, index: number = 0, _total: number = 1, forcedType: 'powerup' | 'bad' | null = null): Duck {
   // Distribute ducks across different spawn positions
   const spawnSide = index % 3; // 0 = left, 1 = center, 2 = right
   let startX: number;
@@ -91,7 +91,7 @@ export function createDuck(speed: number, index: number = 0, _total: number = 1)
   const velocity = { x: vx, y: vy };
 
   // Determine duck type (normal, powerup, or bad)
-  const duckType = getDuckType();
+  const duckType = forcedType || getDuckType();
 
   return {
     id: generateId(),

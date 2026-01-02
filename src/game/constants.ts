@@ -12,9 +12,9 @@ export const DUCK_COLORS = ['red', 'blue', 'green'] as const;
 
 // Duck type chances (must sum to 1.0)
 export const DUCK_TYPE_CHANCES = {
-  normal: 0.70,   // 70% - Patos normales (dan puntos)
-  powerup: 0.18,  // 18% - Patos dorados (dan salud o rapid fire)
-  bad: 0.12,      // 12% - Patos morados (quitan salud si escapan)
+  normal: 0.55,   // 55% - Patos normales (dan puntos)
+  powerup: 0.25,  // 25% - Patos dorados (dan salud o rapid fire)
+  bad: 0.20,      // 20% - Patos morados (quitan salud si escapan)
 };
 
 export const RAPID_FIRE_DURATION = 5000; // 5 seconds in milliseconds
