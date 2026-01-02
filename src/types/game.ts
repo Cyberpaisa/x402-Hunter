@@ -8,9 +8,10 @@ export interface Duck {
   position: Position;
   velocity: Position;
   state: DuckState;
-  color: 'red' | 'blue' | 'green';
+  color: 'red' | 'blue' | 'green' | 'golden';
   direction: Direction;
   animationFrame: number;
+  isPowerUp?: boolean;
 }
 
 export type DuckState = 'flying' | 'shot' | 'falling' | 'escaped';
@@ -38,6 +39,7 @@ export interface GameStats {
   ducksMissed: number;
   lives: number;
   totalDucksShot: number;
+  rapidFireUntil: number;
 }
 
 export interface PaymentConfig {

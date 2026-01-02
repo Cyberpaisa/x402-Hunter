@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
 import type { Duck, GameState, GameStats, GameLevel } from '../types/game';
 import { LEVELS, SUCCESS_RATIO } from '../game/levels';
-import { INITIAL_LIVES, HIT_RADIUS } from '../game/constants';
+import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION } from '../game/constants';
 import { createDuck, updateDuckPosition, updateFallingDuck, pointDistance, checkDuckEscaped } from '../game/utils';
 import sounds from '../game/sounds';
 
@@ -46,6 +46,7 @@ const initialStats: GameStats = {
   ducksMissed: 0,
   lives: INITIAL_LIVES,
   totalDucksShot: 0,
+  rapidFireUntil: 0,
 };
 
 const initialState: GameContextState = {
@@ -91,17 +92,22 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
 
     case 'SPAWN_DUCKS': {
       const newDucks: Duck[] = [];
-      for (let i = 0; i < state.currentLevel.ducksPerWave; i++) {
-        newDucks.push(createDuck(state.currentLevel.duckSpeed));
+      const duckCount = state.currentLevel.ducksPerWave;
+      for (let i = 0; i < duckCount; i++) {
+        newDucks.push(createDuck(state.currentLevel.duckSpeed, i, duckCount));
       }
       return { ...state, ducks: newDucks };
     }
 
     case 'SHOOT': {
-      if (state.stats.bullets <= 0 || state.gameState !== 'playing') return state;
+      // Check if rapid fire is active (unlimited bullets during power-up)
+      const isRapidFire = Date.now() < state.stats.rapidFireUntil;
+      if (state.stats.bullets <= 0 && !isRapidFire) return state;
+      if (state.gameState !== 'playing') return state;
 
       const clickPos = { x: action.x, y: action.y };
       let ducksHit = 0;
+      let hitPowerUp = false;
       const updatedDucks = state.ducks.map((duck) => {
         if (duck.state === 'flying') {
           const duckCenter = {
@@ -110,7 +116,12 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           };
           if (pointDistance(clickPos, duckCenter) < HIT_RADIUS) {
             ducksHit++;
-            sounds.play('duckHit');
+            if (duck.isPowerUp) {
+              hitPowerUp = true;
+              sounds.play('powerUp');
+            } else {
+              sounds.play('duckHit');
+            }
             return { ...duck, state: 'shot' as const };
           }
         }
@@ -121,14 +132,23 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         sounds.play('gunshot');
       }
 
+      // Calculate new rapid fire time if power-up was hit
+      const newRapidFireUntil = hitPowerUp
+        ? Math.max(state.stats.rapidFireUntil, Date.now()) + RAPID_FIRE_DURATION
+        : state.stats.rapidFireUntil;
+
+      // Bonus points for golden duck
+      const bonusPoints = hitPowerUp ? 500 : 0;
+
       return {
         ...state,
         stats: {
           ...state.stats,
-          bullets: state.stats.bullets - 1,
+          bullets: isRapidFire ? state.stats.bullets : state.stats.bullets - 1,
           ducksShot: state.stats.ducksShot + ducksHit,
           totalDucksShot: state.stats.totalDucksShot + ducksHit,
-          score: state.stats.score + ducksHit * state.currentLevel.pointsPerDuck,
+          score: state.stats.score + ducksHit * state.currentLevel.pointsPerDuck + bonusPoints,
+          rapidFireUntil: newRapidFireUntil,
         },
         ducks: updatedDucks,
       };
@@ -237,12 +257,19 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
     }
 
     case 'BUY_LIFE': {
+      // Add a life and restart the current wave
       return {
         ...state,
+        gameState: 'playing',
         stats: {
           ...state.stats,
           lives: state.stats.lives + 1,
+          wave: 1,
+          ducksShot: 0,
+          bullets: state.currentLevel.bulletsPerWave,
         },
+        ducks: [],
+        timeRemaining: state.currentLevel.timePerWave,
       };
     }
 
@@ -340,7 +367,11 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setTimeout(() => dispatch({ type: 'SPAWN_DUCKS' }), 500);
   }, []);
   const resetGame = useCallback(() => dispatch({ type: 'RESET_GAME' }), []);
-  const buyLife = useCallback(() => dispatch({ type: 'BUY_LIFE' }), []);
+  const buyLife = useCallback(() => {
+    dispatch({ type: 'BUY_LIFE' });
+    waveStartTimeRef.current = performance.now();
+    setTimeout(() => dispatch({ type: 'SPAWN_DUCKS' }), 500);
+  }, []);
   const continueGame = useCallback(() => {
     dispatch({ type: 'CONTINUE_GAME' });
     waveStartTimeRef.current = performance.now();

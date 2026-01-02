@@ -9,6 +9,8 @@ export const HIT_RADIUS = 50;
 export const INITIAL_LIVES = 3;
 
 export const DUCK_COLORS = ['red', 'blue', 'green'] as const;
+export const POWER_UP_CHANCE = 0.15; // 15% chance for a duck to be a power-up
+export const RAPID_FIRE_DURATION = 5000; // 5 seconds in milliseconds
 
 export const PAYMENT_CONFIG = {
   pricePerGame: '0.10',

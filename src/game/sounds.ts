@@ -1,4 +1,4 @@
-type SoundName = 'gunshot' | 'duckHit' | 'duckFall' | 'duckEscape' | 'levelUp' | 'gameOver' | 'victory' | 'click' | 'payment';
+type SoundName = 'gunshot' | 'duckHit' | 'duckFall' | 'duckEscape' | 'levelUp' | 'gameOver' | 'victory' | 'click' | 'payment' | 'powerUp';
 
 let audioContext: AudioContext | null = null;
 let muted = false;
@@ -114,6 +114,13 @@ const soundEffects: Record<SoundName, () => void> = {
   payment: () => {
     playTone(880, 0.1, 'sine', 0.3);
     setTimeout(() => playTone(1100, 0.15, 'sine', 0.3), 100);
+  },
+  powerUp: () => {
+    // Exciting power-up sound - ascending arpeggio
+    playTone(440, 0.1, 'sine', 0.4);
+    setTimeout(() => playTone(554, 0.1, 'sine', 0.4), 80);
+    setTimeout(() => playTone(659, 0.1, 'sine', 0.4), 160);
+    setTimeout(() => playTone(880, 0.2, 'sine', 0.5), 240);
   },
 };
 

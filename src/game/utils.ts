@@ -1,5 +1,5 @@
 import type { Position, Direction, Duck, DuckState } from '../types/game';
-import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS } from './constants';
+import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, POWER_UP_CHANCE } from './constants';
 
 export function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -19,24 +19,66 @@ export function getDirection(velocity: Position): Direction {
   return goingLeft ? 'left' : 'right';
 }
 
-export function createDuck(speed: number): Duck {
-  const startX = Math.random() * (GAME_WIDTH - DUCK_WIDTH * 2) + DUCK_WIDTH;
-  const angle = Math.random() * Math.PI - Math.PI / 2;
+export function createDuck(speed: number, index: number = 0, _total: number = 1): Duck {
+  // Distribute ducks across different spawn positions
+  const spawnSide = index % 3; // 0 = left, 1 = center, 2 = right
+  let startX: number;
+  let startY: number;
+
+  const margin = DUCK_WIDTH * 2;
+  const usableWidth = GAME_WIDTH - margin * 2;
+
+  switch (spawnSide) {
+    case 0: // Left side
+      startX = margin + Math.random() * (usableWidth * 0.3);
+      startY = GAME_HEIGHT - DUCK_HEIGHT - Math.random() * 100;
+      break;
+    case 1: // Center/bottom
+      startX = margin + usableWidth * 0.3 + Math.random() * (usableWidth * 0.4);
+      startY = GAME_HEIGHT - DUCK_HEIGHT;
+      break;
+    case 2: // Right side
+      startX = margin + usableWidth * 0.7 + Math.random() * (usableWidth * 0.3);
+      startY = GAME_HEIGHT - DUCK_HEIGHT - Math.random() * 100;
+      break;
+    default:
+      startX = Math.random() * (GAME_WIDTH - DUCK_WIDTH * 2) + DUCK_WIDTH;
+      startY = GAME_HEIGHT - DUCK_HEIGHT;
+  }
+
+  // More varied angles for better movement
+  const angle = (Math.random() * 0.8 + 0.1) * Math.PI; // Between 18° and 162° (mostly upward)
 
   const baseSpeed = 2 + speed * 0.5;
-  const vx = Math.cos(angle) * baseSpeed * (Math.random() > 0.5 ? 1 : -1);
-  const vy = -Math.abs(Math.sin(angle) * baseSpeed);
+  const speedVariation = 0.7 + Math.random() * 0.6; // 70% to 130% of base speed
+  const finalSpeed = baseSpeed * speedVariation;
+
+  // Direction based on spawn position
+  let vx: number;
+  if (spawnSide === 0) {
+    vx = Math.abs(Math.cos(angle) * finalSpeed); // Go right from left
+  } else if (spawnSide === 2) {
+    vx = -Math.abs(Math.cos(angle) * finalSpeed); // Go left from right
+  } else {
+    vx = Math.cos(angle) * finalSpeed * (Math.random() > 0.5 ? 1 : -1);
+  }
+
+  const vy = -Math.abs(Math.sin(angle) * finalSpeed); // Always go up initially
 
   const velocity = { x: vx, y: vy };
 
+  // Check if this duck should be a power-up (golden duck)
+  const isPowerUp = Math.random() < POWER_UP_CHANCE;
+
   return {
     id: generateId(),
-    position: { x: startX, y: GAME_HEIGHT - DUCK_HEIGHT },
+    position: { x: startX, y: startY },
     velocity,
     state: 'flying',
-    color: DUCK_COLORS[Math.floor(Math.random() * DUCK_COLORS.length)],
+    color: isPowerUp ? 'golden' : DUCK_COLORS[Math.floor(Math.random() * DUCK_COLORS.length)],
     direction: getDirection(velocity),
     animationFrame: 0,
+    isPowerUp,
   };
 }
 

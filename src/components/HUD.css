@@ -141,3 +141,57 @@
 .ducks-total {
   color: #fff;
 }
+
+/* Rapid Fire Styles */
+.bullets-display.rapid-fire {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  padding: 8px 15px;
+  border-radius: 8px;
+  animation: rapid-fire-glow 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes rapid-fire-glow {
+  0% {
+    box-shadow: 0 0 10px #ffd700, 0 0 20px #ff8c00;
+  }
+  100% {
+    box-shadow: 0 0 20px #ffd700, 0 0 40px #ff8c00;
+  }
+}
+
+.rapid-fire-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rapid-fire-icon {
+  font-size: 20px;
+  animation: bolt-flash 0.2s ease-in-out infinite alternate;
+}
+
+@keyframes bolt-flash {
+  0% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.rapid-fire-text {
+  font-size: 12px;
+  font-weight: bold;
+  color: #000;
+  text-shadow: none;
+}
+
+.rapid-fire-timer {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000;
+  text-shadow: none;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
