@@ -1,0 +1,240 @@
+.duck {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  cursor: crosshair;
+  transition: transform 0.1s ease;
+}
+
+.duck-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.duck-head {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  top: 5px;
+  right: 5px;
+  z-index: 2;
+}
+
+.duck-eye {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #000;
+  border-radius: 50%;
+  top: 6px;
+  right: 4px;
+}
+
+.duck-eye::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  top: 1px;
+  right: 1px;
+}
+
+.duck-beak {
+  position: absolute;
+  width: 12px;
+  height: 8px;
+  background: #ff9800;
+  border-radius: 0 50% 50% 0;
+  top: 10px;
+  right: -8px;
+}
+
+.duck-wing {
+  position: absolute;
+  width: 35px;
+  height: 20px;
+  border-radius: 50%;
+  top: 20px;
+  left: 10px;
+  z-index: 1;
+  animation: flap 0.15s ease-in-out infinite alternate;
+}
+
+.duck-tail {
+  position: absolute;
+  width: 15px;
+  height: 12px;
+  border-radius: 50% 0 0 50%;
+  bottom: 15px;
+  left: 0;
+}
+
+/* Duck Colors */
+.duck-red .duck-head,
+.duck-red .duck-body::before {
+  background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+}
+
+.duck-red .duck-wing {
+  background: linear-gradient(135deg, #c45c26 0%, #8b4513 100%);
+}
+
+.duck-red .duck-tail {
+  background: #654321;
+}
+
+.duck-red .duck-body::before {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 35px;
+  background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+  border-radius: 50%;
+  top: 15px;
+  left: 8px;
+}
+
+.duck-blue .duck-head {
+  background: linear-gradient(135deg, #1a5f7a 0%, #0d3b4c 100%);
+}
+
+.duck-blue .duck-wing {
+  background: linear-gradient(135deg, #2196f3 0%, #1565c0 100%);
+}
+
+.duck-blue .duck-tail {
+  background: #0d3b4c;
+}
+
+.duck-blue .duck-body::before {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 35px;
+  background: linear-gradient(135deg, #1a5f7a 0%, #0d3b4c 100%);
+  border-radius: 50%;
+  top: 15px;
+  left: 8px;
+}
+
+.duck-green .duck-head {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+}
+
+.duck-green .duck-wing {
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+}
+
+.duck-green .duck-tail {
+  background: #1b5e20;
+}
+
+.duck-green .duck-body::before {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 35px;
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  border-radius: 50%;
+  top: 15px;
+  left: 8px;
+}
+
+/* Flying Animation */
+.duck-flying {
+  animation: bob 0.5s ease-in-out infinite;
+}
+
+.duck-flying .duck-wing {
+  animation: flap 0.15s ease-in-out infinite alternate;
+}
+
+/* Direction specific */
+.duck-top-left,
+.duck-top-right {
+  transform: rotate(-20deg);
+}
+
+/* Shot State */
+.duck-shot {
+  animation: shot-flash 0.3s ease-out;
+}
+
+.duck-shot .duck-wing {
+  animation: none;
+  transform: rotate(45deg);
+}
+
+.duck-shot .duck-eye {
+  width: 8px;
+  height: 2px;
+  border-radius: 0;
+  background: #000;
+}
+
+/* Falling State */
+.duck-falling {
+  animation: fall-spin 0.5s linear infinite;
+}
+
+.duck-falling .duck-wing {
+  animation: none;
+  transform: rotate(90deg);
+}
+
+/* Animations */
+@keyframes flap {
+  0% {
+    transform: rotate(-15deg) translateY(0);
+  }
+  100% {
+    transform: rotate(15deg) translateY(-5px);
+  }
+}
+
+@keyframes bob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes shot-flash {
+  0% {
+    filter: brightness(2) saturate(0);
+  }
+  50% {
+    filter: brightness(1.5) saturate(0.5);
+  }
+  100% {
+    filter: brightness(1) saturate(1);
+  }
+}
+
+@keyframes fall-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Frame animations for variety */
+.frame-0 .duck-wing {
+  transform: rotate(-10deg);
+}
+
+.frame-1 .duck-wing {
+  transform: rotate(0deg);
+}
+
+.frame-2 .duck-wing {
+  transform: rotate(10deg);
+}

@@ -1,0 +1,66 @@
+import { GameLevel } from '../types/game';
+
+export const LEVELS: GameLevel[] = [
+  {
+    id: 1,
+    title: 'Beginner',
+    waves: 3,
+    ducksPerWave: 2,
+    duckSpeed: 3,
+    bulletsPerWave: 5,
+    timePerWave: 15,
+    pointsPerDuck: 100,
+  },
+  {
+    id: 2,
+    title: 'Easy',
+    waves: 4,
+    ducksPerWave: 3,
+    duckSpeed: 4,
+    bulletsPerWave: 5,
+    timePerWave: 12,
+    pointsPerDuck: 150,
+  },
+  {
+    id: 3,
+    title: 'Medium',
+    waves: 5,
+    ducksPerWave: 3,
+    duckSpeed: 5,
+    bulletsPerWave: 4,
+    timePerWave: 10,
+    pointsPerDuck: 200,
+  },
+  {
+    id: 4,
+    title: 'Hard',
+    waves: 5,
+    ducksPerWave: 4,
+    duckSpeed: 6,
+    bulletsPerWave: 5,
+    timePerWave: 10,
+    pointsPerDuck: 250,
+  },
+  {
+    id: 5,
+    title: 'Expert',
+    waves: 6,
+    ducksPerWave: 5,
+    duckSpeed: 7,
+    bulletsPerWave: 6,
+    timePerWave: 12,
+    pointsPerDuck: 300,
+  },
+  {
+    id: 6,
+    title: 'Master',
+    waves: 3,
+    ducksPerWave: 8,
+    duckSpeed: 8,
+    bulletsPerWave: 10,
+    timePerWave: 20,
+    pointsPerDuck: 500,
+  },
+];
+
+export const SUCCESS_RATIO = 0.6;

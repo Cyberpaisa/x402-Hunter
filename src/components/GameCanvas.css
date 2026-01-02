@@ -1,0 +1,293 @@
+.game-canvas {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  user-select: none;
+}
+
+.game-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    #1e90ff 0%,
+    #87ceeb 40%,
+    #b0e0e6 70%,
+    #f0e68c 100%
+  );
+}
+
+.clouds {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+}
+
+.cloud {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  filter: blur(2px);
+}
+
+.cloud::before,
+.cloud::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.cloud-1 {
+  width: 80px;
+  height: 40px;
+  top: 10%;
+  left: 10%;
+  animation: cloud-float 30s linear infinite;
+}
+
+.cloud-1::before {
+  width: 50px;
+  height: 30px;
+  top: -15px;
+  left: 15px;
+}
+
+.cloud-1::after {
+  width: 40px;
+  height: 25px;
+  top: -10px;
+  left: 45px;
+}
+
+.cloud-2 {
+  width: 100px;
+  height: 50px;
+  top: 15%;
+  left: 50%;
+  animation: cloud-float 25s linear infinite reverse;
+}
+
+.cloud-2::before {
+  width: 60px;
+  height: 35px;
+  top: -20px;
+  left: 20px;
+}
+
+.cloud-2::after {
+  width: 50px;
+  height: 30px;
+  top: -15px;
+  left: 55px;
+}
+
+.cloud-3 {
+  width: 70px;
+  height: 35px;
+  top: 5%;
+  right: 15%;
+  animation: cloud-float 35s linear infinite;
+}
+
+.cloud-3::before {
+  width: 45px;
+  height: 25px;
+  top: -12px;
+  left: 12px;
+}
+
+.cloud-3::after {
+  width: 35px;
+  height: 20px;
+  top: -8px;
+  left: 40px;
+}
+
+@keyframes cloud-float {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(calc(100vw + 100%));
+  }
+}
+
+.sun {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, #fff9c4 0%, #ffeb3b 50%, #ff9800 100%);
+  border-radius: 50%;
+  top: 8%;
+  right: 10%;
+  box-shadow: 0 0 40px rgba(255, 235, 59, 0.6);
+}
+
+.mountains {
+  position: absolute;
+  bottom: 25%;
+  left: 0;
+  right: 0;
+  height: 25%;
+  background:
+    linear-gradient(135deg, transparent 40%, #6b8e23 40%, #556b2f 100%) 0 100%,
+    linear-gradient(225deg, transparent 40%, #5f9ea0 40%, #2f4f4f 100%) 100% 100%;
+  background-size: 50% 100%;
+  background-repeat: no-repeat;
+}
+
+.mountains::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  width: 50%;
+  height: 120%;
+  background: linear-gradient(180deg, #4682b4 0%, #2e8b57 100%);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.trees {
+  position: absolute;
+  bottom: 15%;
+  left: 0;
+  right: 0;
+  height: 20%;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+
+.trees::before,
+.trees::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+}
+
+.trees::before {
+  left: 5%;
+  width: 60px;
+  height: 100%;
+  background:
+    radial-gradient(ellipse 100% 80% at 50% 100%, #228b22 0%, transparent 70%),
+    linear-gradient(to top, #8b4513 0%, #8b4513 100%);
+  background-size: 100% 80%, 10% 30%;
+  background-position: center top, center bottom;
+  background-repeat: no-repeat;
+}
+
+.trees::after {
+  right: 8%;
+  width: 80px;
+  height: 120%;
+  background:
+    radial-gradient(ellipse 100% 75% at 50% 100%, #006400 0%, transparent 70%),
+    linear-gradient(to top, #654321 0%, #654321 100%);
+  background-size: 100% 75%, 12% 35%;
+  background-position: center top, center bottom;
+  background-repeat: no-repeat;
+}
+
+.grass {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 18%;
+  background: linear-gradient(
+    to top,
+    #228b22 0%,
+    #32cd32 30%,
+    #3cb371 60%,
+    #2e8b57 100%
+  );
+}
+
+.grass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 15px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 10px,
+    #228b22 10px,
+    #228b22 12px
+  );
+  clip-path: polygon(
+    0% 100%,
+    2% 0%,
+    4% 100%,
+    6% 0%,
+    8% 100%,
+    10% 0%,
+    12% 100%,
+    14% 0%,
+    16% 100%,
+    18% 0%,
+    20% 100%,
+    22% 0%,
+    24% 100%,
+    26% 0%,
+    28% 100%,
+    30% 0%,
+    32% 100%,
+    34% 0%,
+    36% 100%,
+    38% 0%,
+    40% 100%,
+    42% 0%,
+    44% 100%,
+    46% 0%,
+    48% 100%,
+    50% 0%,
+    52% 100%,
+    54% 0%,
+    56% 100%,
+    58% 0%,
+    60% 100%,
+    62% 0%,
+    64% 100%,
+    66% 0%,
+    68% 100%,
+    70% 0%,
+    72% 100%,
+    74% 0%,
+    76% 100%,
+    78% 0%,
+    80% 100%,
+    82% 0%,
+    84% 100%,
+    86% 0%,
+    88% 100%,
+    90% 0%,
+    92% 100%,
+    94% 0%,
+    96% 100%,
+    98% 0%,
+    100% 100%
+  );
+}
+
+.game-entities {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}

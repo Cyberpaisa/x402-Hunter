@@ -1,0 +1,170 @@
+.gameover-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 200;
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.gameover-container {
+  text-align: center;
+  padding: 40px;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.gameover-title {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 48px;
+  color: #ff4444;
+  text-shadow: 4px 4px 0 #8b0000, 0 0 40px rgba(255, 0, 0, 0.5);
+  margin-bottom: 40px;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    text-shadow: 4px 4px 0 #8b0000, 0 0 40px rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    text-shadow: 4px 4px 0 #8b0000, 0 0 60px rgba(255, 0, 0, 0.8);
+  }
+}
+
+.gameover-stats {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px 40px;
+  margin-bottom: 40px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+.stat-value {
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.stat-value.score {
+  color: #ffd700;
+  font-size: 24px;
+}
+
+.gameover-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.btn-icon {
+  font-size: 20px;
+}
+
+.btn-text {
+  flex: 1;
+  text-align: left;
+  margin-left: 10px;
+}
+
+.btn-price {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.continue-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.continue-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.life-btn {
+  background: linear-gradient(135deg, #f44336 0%, #e91e63 100%);
+  color: #fff;
+}
+
+.life-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(244, 67, 54, 0.4);
+}
+
+.newgame-btn {
+  background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+  color: #fff;
+}
+
+.newgame-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+}
+
+.menu-btn {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  justify-content: center;
+}
+
+.menu-btn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}

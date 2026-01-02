@@ -1,0 +1,143 @@
+.hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: #fff;
+  text-shadow: 2px 2px 0 #000, -1px -1px 0 #000;
+  z-index: 100;
+}
+
+.hud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 15px 20px;
+}
+
+.hud-left,
+.hud-right {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud-label {
+  font-size: 10px;
+  color: #ffd700;
+  letter-spacing: 1px;
+}
+
+.hud-value {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.hud-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.hud-timer {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 2px solid #ffd700;
+}
+
+.timer-value {
+  font-size: 24px;
+  color: #ffd700;
+}
+
+.pause-btn {
+  pointer-events: auto;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid #fff;
+  color: #fff;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.pause-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.hud-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 15px 20px;
+}
+
+.bullets-display {
+  display: flex;
+  gap: 5px;
+}
+
+.bullet {
+  width: 8px;
+  height: 20px;
+  background: linear-gradient(to bottom, #ffd700 0%, #b8860b 50%, #8b6914 100%);
+  border-radius: 2px 2px 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.lives-display {
+  display: flex;
+  gap: 5px;
+  font-size: 24px;
+}
+
+.life-heart {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.ducks-counter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 15px;
+  border-radius: 8px;
+}
+
+.ducks-shot {
+  color: #4caf50;
+}
+
+.ducks-separator {
+  color: #888;
+}
+
+.ducks-total {
+  color: #fff;
+}
