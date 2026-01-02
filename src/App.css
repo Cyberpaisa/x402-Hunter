@@ -1,31 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html, body {
-  height: 100%;
-  overflow: hidden;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  min-height: 100vh;
-}
-
-#root {
-  height: 100%;
-}
-
 .app {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   min-height: 100vh;
   padding: 20px;
 }
@@ -38,24 +15,15 @@ body {
   overflow: hidden;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(to bottom, #87ceeb 0%, #98d8c8 100%);
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+/* Fallback for browsers without aspect-ratio support */
+@supports not (aspect-ratio: 4 / 3) {
+  .game-wrapper {
+    height: 0;
+    padding-bottom: 75%;
+  }
 }
 
 /* Prevent text selection during gameplay */
