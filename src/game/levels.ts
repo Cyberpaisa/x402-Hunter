@@ -1,4 +1,4 @@
-import { GameLevel } from '../types/game';
+import type { GameLevel } from '../types/game';
 
 export const LEVELS: GameLevel[] = [
   {

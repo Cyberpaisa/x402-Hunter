@@ -1,5 +1,5 @@
 import React from 'react';
-import { Duck as DuckType } from '../types/game';
+import type { Duck as DuckType } from '../types/game';
 import './Duck.css';
 
 interface DuckProps {

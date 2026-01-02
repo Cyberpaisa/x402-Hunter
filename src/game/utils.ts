@@ -1,4 +1,4 @@
-import { Position, Direction, Duck, DuckState } from '../types/game';
+import type { Position, Direction, Duck, DuckState } from '../types/game';
 import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS } from './constants';
 
 export function generateId(): string {

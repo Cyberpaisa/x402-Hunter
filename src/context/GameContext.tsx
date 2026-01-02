@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
-import { Duck, GameState, GameStats, GameLevel } from '../types/game';
+import type { Duck, GameState, GameStats, GameLevel } from '../types/game';
 import { LEVELS, SUCCESS_RATIO } from '../game/levels';
 import { INITIAL_LIVES, HIT_RADIUS } from '../game/constants';
 import { createDuck, updateDuckPosition, updateFallingDuck, pointDistance, checkDuckEscaped } from '../game/utils';
@@ -375,7 +375,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: 'UPDATE_TIME', time: remaining });
 
       const allDucksProcessed = state.ducks.length > 0 &&
-        state.ducks.every((d) => d.state === 'escaped' || d.state === 'escaped');
+        state.ducks.every((d) => d.state === 'escaped' || (d.state as string) === 'dead');
       const outOfBullets = state.stats.bullets <= 0;
       const timeUp = remaining <= 0;
 
