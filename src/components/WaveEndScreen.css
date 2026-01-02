@@ -1,0 +1,193 @@
+.waveend-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 200;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.waveend-container {
+  text-align: center;
+  padding: 40px 50px;
+  background: rgba(20, 20, 40, 0.95);
+  border-radius: 16px;
+  border: 3px solid;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.waveend-container.success {
+  border-color: #4caf50;
+  box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+}
+
+.waveend-container.warning {
+  border-color: #ff9800;
+  box-shadow: 0 0 30px rgba(255, 152, 0, 0.3);
+}
+
+.waveend-container.fail {
+  border-color: #f44336;
+  box-shadow: 0 0 30px rgba(244, 67, 54, 0.3);
+}
+
+.waveend-container.neutral {
+  border-color: #2196f3;
+  box-shadow: 0 0 30px rgba(33, 150, 243, 0.3);
+}
+
+.waveend-title {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.success .waveend-title {
+  color: #4caf50;
+}
+
+.warning .waveend-title {
+  color: #ff9800;
+}
+
+.fail .waveend-title {
+  color: #f44336;
+}
+
+.neutral .waveend-title {
+  color: #2196f3;
+}
+
+.waveend-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+.waveend-stats {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px 25px;
+  border-radius: 8px;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.stat-text {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 5px;
+}
+
+.level-progress {
+  margin-bottom: 25px;
+}
+
+.progress-bar {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+  border-radius: 6px;
+  transition: width 0.5s ease-out;
+}
+
+.progress-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.waveend-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.waveend-button {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 12px;
+  padding: 14px 35px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  min-width: 220px;
+}
+
+.next-btn {
+  background: linear-gradient(180deg, #4caf50 0%, #388e3c 100%);
+  color: #fff;
+  box-shadow: 0 4px 0 #2e7d32;
+}
+
+.next-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #2e7d32;
+}
+
+.retry-btn {
+  background: linear-gradient(180deg, #ff9800 0%, #f57c00 100%);
+  color: #fff;
+  box-shadow: 0 4px 0 #e65100;
+}
+
+.retry-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #e65100;
+}
+
+.life-btn {
+  background: linear-gradient(180deg, #e91e63 0%, #c2185b 100%);
+  color: #fff;
+  box-shadow: 0 4px 0 #880e4f;
+}
+
+.life-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #880e4f;
+}

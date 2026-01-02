@@ -1,0 +1,182 @@
+.victory-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.9) 0%, rgba(255, 140, 0, 0.9) 100%);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.victory-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  top: -20px;
+  animation: fall 3s linear infinite;
+}
+
+.confetti-0 {
+  background: #ff6b6b;
+  border-radius: 50%;
+}
+
+.confetti-1 {
+  background: #4ecdc4;
+  transform: rotate(45deg);
+}
+
+.confetti-2 {
+  background: #ffe66d;
+  border-radius: 2px;
+}
+
+.confetti-3 {
+  background: #95e1d3;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.confetti-4 {
+  background: #f38181;
+  border-radius: 50% 0;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-20px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.victory-container {
+  text-align: center;
+  padding: 40px;
+  z-index: 1;
+}
+
+.victory-title {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 56px;
+  color: #fff;
+  text-shadow: 4px 4px 0 #b8860b, 8px 8px 20px rgba(0, 0, 0, 0.3);
+  margin-bottom: 10px;
+  animation: bounce 0.5s ease infinite alternate;
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-10px);
+  }
+}
+
+.victory-subtitle {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 16px;
+  color: #8b4513;
+  margin-bottom: 20px;
+}
+
+.victory-trophy {
+  font-size: 100px;
+  margin: 20px 0;
+  animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+  }
+  50% {
+    filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1));
+  }
+}
+
+.victory-stats {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 30px 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 20px 30px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.stat-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #8b4513;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #654321;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 5px;
+}
+
+.victory-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.victory-button {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 12px;
+  padding: 15px 40px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.play-again {
+  background: linear-gradient(180deg, #4caf50 0%, #388e3c 100%);
+  color: #fff;
+  box-shadow: 0 4px 0 #2e7d32;
+}
+
+.play-again:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #2e7d32;
+}
+
+.menu-button {
+  background: transparent;
+  color: #8b4513;
+  border: 2px solid #8b4513;
+}
+
+.menu-button:hover {
+  background: rgba(139, 69, 19, 0.1);
+}
