@@ -24,7 +24,7 @@ export const DuckComponent: React.FC<DuckProps> = ({ duck }) => {
 
   return (
     <div
-      className={`duck duck-${duck.color} ${getStateClass()} frame-${duck.animationFrame} ${duck.isPowerUp ? 'duck-powerup' : ''}`}
+      className={`duck duck-${duck.color} ${getStateClass()} frame-${duck.animationFrame} ${duck.duckType === 'powerup' ? 'duck-powerup' : ''}`}
       style={{
         left: duck.position.x,
         top: duck.position.y,
@@ -38,7 +38,7 @@ export const DuckComponent: React.FC<DuckProps> = ({ duck }) => {
         </div>
         <div className="duck-wing" />
         <div className="duck-tail" />
-        {duck.isPowerUp && <div className="powerup-glow" />}
+        {duck.duckType === 'powerup' && <div className="powerup-glow" />}
       </div>
     </div>
   );

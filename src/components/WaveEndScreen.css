@@ -191,3 +191,29 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 0 #880e4f;
 }
+
+.lives-remaining {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.lives-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.life-icon {
+  font-size: 20px;
+}
+
+.no-lives {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.wave-progress {
+  margin-bottom: 25px;
+}

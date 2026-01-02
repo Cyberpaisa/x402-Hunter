@@ -9,8 +9,16 @@ export const HIT_RADIUS = 50;
 export const INITIAL_LIVES = 3;
 
 export const DUCK_COLORS = ['red', 'blue', 'green'] as const;
-export const POWER_UP_CHANCE = 0.15; // 15% chance for a duck to be a power-up
+
+// Duck type chances (must sum to 1.0)
+export const DUCK_TYPE_CHANCES = {
+  normal: 0.70,   // 70% - Patos normales (dan puntos)
+  powerup: 0.18,  // 18% - Patos dorados (dan salud o rapid fire)
+  bad: 0.12,      // 12% - Patos morados (quitan salud si escapan)
+};
+
 export const RAPID_FIRE_DURATION = 5000; // 5 seconds in milliseconds
+export const POWERUP_HEALTH_CHANCE = 0.4; // 40% chance powerup gives health instead of rapid fire
 
 export const PAYMENT_CONFIG = {
   pricePerGame: '0.10',

@@ -3,15 +3,18 @@ export interface Position {
   y: number;
 }
 
+// Duck types: normal (points), powerup (health/rapid fire), bad (damage)
+export type DuckType = 'normal' | 'powerup' | 'bad';
+
 export interface Duck {
   id: string;
   position: Position;
   velocity: Position;
   state: DuckState;
-  color: 'red' | 'blue' | 'green' | 'golden';
+  color: 'red' | 'blue' | 'green' | 'golden' | 'purple';
   direction: Direction;
   animationFrame: number;
-  isPowerUp?: boolean;
+  duckType: DuckType;
 }
 
 export type DuckState = 'flying' | 'shot' | 'falling' | 'escaped';

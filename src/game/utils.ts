@@ -1,5 +1,5 @@
-import type { Position, Direction, Duck, DuckState } from '../types/game';
-import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, POWER_UP_CHANCE } from './constants';
+import type { Position, Direction, Duck, DuckState, DuckType } from '../types/game';
+import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, DUCK_TYPE_CHANCES } from './constants';
 
 export function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -17,6 +17,29 @@ export function getDirection(velocity: Position): Direction {
     return goingLeft ? 'top-left' : 'top-right';
   }
   return goingLeft ? 'left' : 'right';
+}
+
+// Determine duck type based on chances
+function getDuckType(): DuckType {
+  const rand = Math.random();
+  if (rand < DUCK_TYPE_CHANCES.normal) {
+    return 'normal';
+  } else if (rand < DUCK_TYPE_CHANCES.normal + DUCK_TYPE_CHANCES.powerup) {
+    return 'powerup';
+  }
+  return 'bad';
+}
+
+// Get color based on duck type
+function getDuckColor(duckType: DuckType): 'red' | 'blue' | 'green' | 'golden' | 'purple' {
+  switch (duckType) {
+    case 'powerup':
+      return 'golden';
+    case 'bad':
+      return 'purple';
+    default:
+      return DUCK_COLORS[Math.floor(Math.random() * DUCK_COLORS.length)];
+  }
 }
 
 export function createDuck(speed: number, index: number = 0, _total: number = 1): Duck {
@@ -67,18 +90,18 @@ export function createDuck(speed: number, index: number = 0, _total: number = 1)
 
   const velocity = { x: vx, y: vy };
 
-  // Check if this duck should be a power-up (golden duck)
-  const isPowerUp = Math.random() < POWER_UP_CHANCE;
+  // Determine duck type (normal, powerup, or bad)
+  const duckType = getDuckType();
 
   return {
     id: generateId(),
     position: { x: startX, y: startY },
     velocity,
     state: 'flying',
-    color: isPowerUp ? 'golden' : DUCK_COLORS[Math.floor(Math.random() * DUCK_COLORS.length)],
+    color: getDuckColor(duckType),
     direction: getDirection(velocity),
     animationFrame: 0,
-    isPowerUp,
+    duckType,
   };
 }
 

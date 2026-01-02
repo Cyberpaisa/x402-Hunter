@@ -304,3 +304,53 @@
     opacity: 0.3;
   }
 }
+
+/* Purple Bad Duck - Causes damage if escaped */
+.duck-purple .duck-head {
+  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+}
+
+.duck-purple .duck-wing {
+  background: linear-gradient(135deg, #ce93d8 0%, #ab47bc 100%);
+}
+
+.duck-purple .duck-tail {
+  background: #6a1b9a;
+}
+
+.duck-purple .duck-body::before {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 35px;
+  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+  border-radius: 50%;
+  top: 15px;
+  left: 8px;
+}
+
+.duck-purple {
+  filter: drop-shadow(0 0 8px #9c27b0) drop-shadow(0 0 15px #e91e63);
+  animation: bad-duck-pulse 0.4s ease-in-out infinite alternate, bob 0.5s ease-in-out infinite;
+}
+
+.duck-purple .duck-wing {
+  animation: flap 0.12s ease-in-out infinite alternate;
+}
+
+.duck-purple .duck-eye {
+  background: #ff1744;
+}
+
+.duck-purple .duck-eye::after {
+  background: #fff;
+}
+
+@keyframes bad-duck-pulse {
+  0% {
+    filter: drop-shadow(0 0 5px #9c27b0) drop-shadow(0 0 10px #e91e63);
+  }
+  100% {
+    filter: drop-shadow(0 0 12px #9c27b0) drop-shadow(0 0 25px #e91e63);
+  }
+}

@@ -12,25 +12,23 @@ export const WaveEndScreen: React.FC = () => {
   if (gameState !== 'wave-end') return null;
 
   const isLastWave = stats.wave >= currentLevel.waves;
-  const totalDucksInLevel = currentLevel.waves * currentLevel.ducksPerWave;
-  const requiredDucks = Math.ceil(totalDucksInLevel * SUCCESS_RATIO);
-  const waveSuccess = stats.ducksShot >= Math.ceil(currentLevel.ducksPerWave * SUCCESS_RATIO);
-  const levelComplete = isLastWave && stats.ducksShot >= requiredDucks;
+  const requiredDucks = Math.ceil(currentLevel.ducksPerWave * SUCCESS_RATIO);
+  const waveSuccess = stats.ducksShot >= requiredDucks;
+  const levelComplete = isLastWave && waveSuccess;
 
   const getMessage = () => {
     if (levelComplete) {
       return { title: 'LEVEL COMPLETE!', subtitle: 'Ready for the next challenge?', type: 'success' };
     }
-    if (isLastWave && !levelComplete) {
-      if (stats.lives > 0) {
-        return { title: 'NOT ENOUGH DUCKS', subtitle: 'You need more accuracy!', type: 'warning' };
-      }
-      return { title: 'LEVEL FAILED', subtitle: 'Try again or buy a life', type: 'fail' };
-    }
     if (waveSuccess) {
       return { title: 'WAVE CLEAR!', subtitle: `Wave ${stats.wave} complete`, type: 'success' };
     }
-    return { title: 'WAVE OVER', subtitle: 'Keep shooting!', type: 'neutral' };
+    // Wave failed but still have lives
+    if (stats.lives > 0) {
+      return { title: 'WAVE OVER', subtitle: 'Keep trying!', type: 'neutral' };
+    }
+    // No lives left
+    return { title: 'NO LIVES LEFT', subtitle: 'Buy a life to continue', type: 'fail' };
   };
 
   const message = getMessage();
@@ -46,6 +44,9 @@ export const WaveEndScreen: React.FC = () => {
   const handleBuyLife = () => {
     setShowPayment(true);
   };
+
+  // Can always continue if you have lives (regardless of wave success)
+  const canContinue = stats.lives > 0;
 
   return (
     <>
@@ -69,42 +70,39 @@ export const WaveEndScreen: React.FC = () => {
             </div>
           </div>
 
-          {isLastWave && (
-            <div className="level-progress">
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${Math.min(100, (stats.ducksShot / requiredDucks) * 100)}%` }}
-                />
-              </div>
-              <span className="progress-text">
-                {stats.ducksShot} / {requiredDucks} ducks needed ({Math.round(SUCCESS_RATIO * 100)}%)
-              </span>
+          <div className="lives-remaining">
+            <span className="lives-label">Lives: </span>
+            {stats.lives > 0 ? (
+              Array.from({ length: stats.lives }).map((_, i) => (
+                <span key={i} className="life-icon">❤️</span>
+              ))
+            ) : (
+              <span className="no-lives">None!</span>
+            )}
+          </div>
+
+          <div className="wave-progress">
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${Math.min(100, (stats.ducksShot / requiredDucks) * 100)}%` }}
+              />
             </div>
-          )}
+            <span className="progress-text">
+              {stats.ducksShot} / {requiredDucks} ducks needed ({Math.round(SUCCESS_RATIO * 100)}%)
+            </span>
+          </div>
 
           <div className="waveend-actions">
-            {!isLastWave && (
+            {canContinue && (
               <button className="waveend-button next-btn" onClick={handleNext}>
-                Next Wave →
+                {levelComplete ? 'Next Level →' : 'Next Wave →'}
               </button>
             )}
 
-            {levelComplete && (
-              <button className="waveend-button next-btn" onClick={handleNext}>
-                Next Level →
-              </button>
-            )}
-
-            {isLastWave && !levelComplete && stats.lives <= 1 && (
+            {!canContinue && (
               <button className="waveend-button life-btn" onClick={handleBuyLife}>
                 ❤️ Buy Life (${PAYMENT_CONFIG.pricePerLife})
-              </button>
-            )}
-
-            {isLastWave && !levelComplete && stats.lives > 1 && (
-              <button className="waveend-button retry-btn" onClick={nextWave}>
-                Try Again
               </button>
             )}
           </div>

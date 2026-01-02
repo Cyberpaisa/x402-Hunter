@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
 import type { Duck, GameState, GameStats, GameLevel } from '../types/game';
 import { LEVELS, SUCCESS_RATIO } from '../game/levels';
-import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION } from '../game/constants';
+import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION, POWERUP_HEALTH_CHANCE } from '../game/constants';
 import { createDuck, updateDuckPosition, updateFallingDuck, pointDistance, checkDuckEscaped } from '../game/utils';
 import sounds from '../game/sounds';
 
@@ -108,6 +108,9 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
       const clickPos = { x: action.x, y: action.y };
       let ducksHit = 0;
       let hitPowerUp = false;
+      let hitBadDuck = false;
+      let givesHealth = false;
+
       const updatedDucks = state.ducks.map((duck) => {
         if (duck.state === 'flying') {
           const duckCenter = {
@@ -116,9 +119,15 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           };
           if (pointDistance(clickPos, duckCenter) < HIT_RADIUS) {
             ducksHit++;
-            if (duck.isPowerUp) {
+
+            // Handle different duck types
+            if (duck.duckType === 'powerup') {
               hitPowerUp = true;
+              givesHealth = Math.random() < POWERUP_HEALTH_CHANCE;
               sounds.play('powerUp');
+            } else if (duck.duckType === 'bad') {
+              hitBadDuck = true;
+              sounds.play('duckHit');
             } else {
               sounds.play('duckHit');
             }
@@ -132,13 +141,27 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         sounds.play('gunshot');
       }
 
-      // Calculate new rapid fire time if power-up was hit
-      const newRapidFireUntil = hitPowerUp
-        ? Math.max(state.stats.rapidFireUntil, Date.now()) + RAPID_FIRE_DURATION
-        : state.stats.rapidFireUntil;
+      // Calculate effects based on duck types hit
+      let newRapidFireUntil = state.stats.rapidFireUntil;
+      let newLives = state.stats.lives;
+      let bonusPoints = 0;
 
-      // Bonus points for golden duck
-      const bonusPoints = hitPowerUp ? 500 : 0;
+      if (hitPowerUp) {
+        if (givesHealth) {
+          // Power-up gives extra life
+          newLives = Math.min(newLives + 1, 5); // Max 5 lives
+          bonusPoints = 300;
+        } else {
+          // Power-up gives rapid fire
+          newRapidFireUntil = Math.max(state.stats.rapidFireUntil, Date.now()) + RAPID_FIRE_DURATION;
+          bonusPoints = 500;
+        }
+      }
+
+      if (hitBadDuck) {
+        // Bad duck gives negative points but no damage when shot
+        bonusPoints -= 200;
+      }
 
       return {
         ...state,
@@ -147,8 +170,9 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           bullets: isRapidFire ? state.stats.bullets : state.stats.bullets - 1,
           ducksShot: state.stats.ducksShot + ducksHit,
           totalDucksShot: state.stats.totalDucksShot + ducksHit,
-          score: state.stats.score + ducksHit * state.currentLevel.pointsPerDuck + bonusPoints,
+          score: Math.max(0, state.stats.score + ducksHit * state.currentLevel.pointsPerDuck + bonusPoints),
           rapidFireUntil: newRapidFireUntil,
+          lives: newLives,
         },
         ducks: updatedDucks,
       };
@@ -181,8 +205,27 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
     }
 
     case 'END_WAVE': {
-      const escapedDucks = state.ducks.filter((d) => d.state === 'escaped' || d.state === 'flying').length;
-      const newMissed = state.stats.ducksMissed + escapedDucks;
+      const escapedDucks = state.ducks.filter((d) => d.state === 'escaped' || d.state === 'flying');
+      const newMissed = state.stats.ducksMissed + escapedDucks.length;
+
+      // Bad ducks that escape damage the player
+      const escapedBadDucks = escapedDucks.filter((d) => d.duckType === 'bad').length;
+      const damageFromBadDucks = escapedBadDucks; // Each bad duck that escapes removes 1 life
+      const newLives = Math.max(0, state.stats.lives - damageFromBadDucks);
+
+      // Check if game over from bad ducks
+      if (newLives <= 0) {
+        sounds.play('gameOver');
+        return {
+          ...state,
+          gameState: 'game-over',
+          stats: {
+            ...state.stats,
+            ducksMissed: newMissed,
+            lives: 0,
+          },
+        };
+      }
 
       return {
         ...state,
@@ -190,6 +233,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         stats: {
           ...state.stats,
           ducksMissed: newMissed,
+          lives: newLives,
         },
       };
     }
