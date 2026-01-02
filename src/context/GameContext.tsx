@@ -351,6 +351,12 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const requestPayment = useCallback(() => dispatch({ type: 'REQUEST_PAYMENT' }), []);
   const goToMenu = useCallback(() => dispatch({ type: 'GO_TO_MENU' }), []);
 
+  // Refs to access current state values in game loop without causing re-renders
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
+
   useEffect(() => {
     if (state.gameState !== 'playing') {
       if (gameLoopRef.current) {
@@ -368,18 +374,26 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       const deltaTime = (currentTime - lastTimeRef.current) / 1000;
       lastTimeRef.current = currentTime;
 
+      // Update duck positions
       dispatch({ type: 'UPDATE_DUCKS', deltaTime });
 
+      // Update timer
       const elapsed = (currentTime - waveStartTimeRef.current) / 1000;
-      const remaining = Math.max(0, state.currentLevel.timePerWave - elapsed);
+      const timePerWave = stateRef.current.currentLevel.timePerWave;
+      const remaining = Math.max(0, timePerWave - elapsed);
       dispatch({ type: 'UPDATE_TIME', time: remaining });
 
-      const allDucksProcessed = state.ducks.length > 0 &&
-        state.ducks.every((d) => d.state === 'escaped' || (d.state as string) === 'dead');
-      const outOfBullets = state.stats.bullets <= 0;
+      // Check end conditions using ref for current values
+      const currentDucks = stateRef.current.ducks;
+      const currentBullets = stateRef.current.stats.bullets;
+
+      const flyingDucks = currentDucks.filter((d) => d.state === 'flying').length;
+      const allDucksGone = currentDucks.length > 0 && flyingDucks === 0 &&
+        currentDucks.every((d) => d.state === 'escaped' || d.state === 'falling');
+      const outOfBullets = currentBullets <= 0 && flyingDucks > 0;
       const timeUp = remaining <= 0;
 
-      if (allDucksProcessed || (outOfBullets && state.ducks.some((d) => d.state === 'flying')) || timeUp) {
+      if (allDucksGone || outOfBullets || timeUp) {
         dispatch({ type: 'END_WAVE' });
         return;
       }
@@ -395,7 +409,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         cancelAnimationFrame(gameLoopRef.current);
       }
     };
-  }, [state.gameState, state.ducks, state.stats.bullets, state.currentLevel.timePerWave]);
+  }, [state.gameState]);
 
   const value: GameContextValue = {
     ...state,
