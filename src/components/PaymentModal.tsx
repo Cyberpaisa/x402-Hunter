@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X402Client } from 'uvd-x402-sdk';
 import { useGame } from '../context/GameContext';
-import { PAYMENT_CONFIG, FACILITATOR_URL } from '../game/constants';
+import { PAYMENT_CONFIG, FACILITATOR_URL, DEV_MODE } from '../game/constants';
 import sounds from '../game/sounds';
 import './PaymentModal.css';
 
@@ -114,7 +114,42 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ type, onClose }) => 
     }
   };
 
+  // DEV MODE: Skip payment and simulate success
+  const handleDevModePayment = async () => {
+    setStatus('processing');
+    console.log('[DEV MODE] Simulating payment...');
+
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    setStatus('success');
+    sounds.play('payment');
+    console.log('[DEV MODE] Payment simulated successfully');
+
+    setTimeout(() => {
+      setPaid(true);
+
+      switch (type) {
+        case 'game':
+          startGame();
+          break;
+        case 'life':
+          buyLife();
+          break;
+        case 'continue':
+          continueGame();
+          break;
+      }
+
+      onClose();
+    }, 1000);
+  };
+
   const handlePayment = async () => {
+    // In dev mode, skip real payment
+    if (DEV_MODE) {
+      return handleDevModePayment();
+    }
+
     try {
       setStatus('connecting');
       setError(null);
@@ -236,23 +271,38 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ type, onClose }) => 
           <span className="amount-currency">USDC</span>
         </div>
 
-        <div className="payment-network">
-          <span className="network-badge">Avalanche Network</span>
-          <span className="network-info">Gasless • Instant</span>
-        </div>
+        {DEV_MODE ? (
+          <div className="payment-network dev-mode">
+            <span className="network-badge dev-badge">DEV MODE</span>
+            <span className="network-info">Payments disabled for testing</span>
+          </div>
+        ) : (
+          <>
+            <div className="payment-network">
+              <span className="network-badge">Avalanche Network</span>
+              <span className="network-info">Gasless • Instant</span>
+            </div>
 
-        <div className="wallet-detected">
-          <span className="wallet-icon">🔗</span>
-          <span className="wallet-name">{walletInfo.name}</span>
-        </div>
+            <div className="wallet-detected">
+              <span className="wallet-icon">🔗</span>
+              <span className="wallet-name">{walletInfo.name}</span>
+            </div>
+          </>
+        )}
 
-        {status === 'idle' && walletInfo.provider && (
+        {status === 'idle' && DEV_MODE && (
+          <button className="payment-button dev-button" onClick={handlePayment}>
+            Skip Payment (Dev Mode)
+          </button>
+        )}
+
+        {status === 'idle' && !DEV_MODE && walletInfo.provider && (
           <button className="payment-button" onClick={handlePayment}>
             Connect {walletInfo.name} & Pay
           </button>
         )}
 
-        {status === 'idle' && !walletInfo.provider && (
+        {status === 'idle' && !DEV_MODE && !walletInfo.provider && (
           <div className="no-wallet">
             <p>No wallet detected</p>
             <button className="payment-button core-button" onClick={openCoreWallet}>

@@ -19,3 +19,6 @@ export const PAYMENT_CONFIG = {
 };
 
 export const FACILITATOR_URL = 'https://facilitator.ultravioletadao.xyz';
+
+// Set to true to skip payments during development/testing
+export const DEV_MODE = true;

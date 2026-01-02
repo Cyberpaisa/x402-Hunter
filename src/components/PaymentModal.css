@@ -248,3 +248,25 @@
   margin-top: 5px !important;
   color: rgba(255, 215, 0, 0.6) !important;
 }
+
+/* Dev Mode Styles */
+.dev-mode {
+  border: 2px dashed #ffd700;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.dev-badge {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%) !important;
+  color: #000 !important;
+  font-weight: bold;
+}
+
+.dev-button {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%) !important;
+  color: #000 !important;
+}
+
+.dev-button:hover {
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4) !important;
+}
