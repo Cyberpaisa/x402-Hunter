@@ -2,7 +2,7 @@ import React, { createContext, useContext, useReducer, useCallback, useRef, useE
 import type { Duck, GameState, GameStats, GameLevel } from '../types/game';
 import type { DogState } from '../components/Dog';
 import { LEVELS, SUCCESS_RATIO } from '../game/levels';
-import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION, DUCK_FLIGHT_TIME, DUCKS_PER_SPAWN, BULLETS_PER_DUCK, POWERUP_COOLDOWN, DUCK_TYPE_CHANCES } from '../game/constants';
+import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION, DUCK_FLIGHT_TIME, DUCKS_PER_SPAWN, BULLETS_PER_DUCK, POWERUP_COOLDOWN, DUCK_TYPE_CHANCES, RETRY_SCORE_PENALTY, MAX_RETRY_PENALTY } from '../game/constants';
 import { createDuck, updateDuckPosition, updateFallingDuck, pointDistance, checkDuckEscaped } from '../game/utils';
 import sounds from '../game/sounds';
 
@@ -55,6 +55,7 @@ const initialStats: GameStats = {
   badDucksEscaped: 0,
   gameOverReason: null,
   lastPowerupSpawn: 0,
+  waveRetries: 0,
 };
 
 const initialState: GameContextState = {
@@ -343,17 +344,25 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
       const requiredDucks = Math.ceil(state.currentLevel.ducksPerWave * SUCCESS_RATIO);
       const waveSuccess = state.stats.ducksShot >= requiredDucks;
 
-      // If wave failed, repeat it (no life penalty)
+      // If wave failed, repeat it with score penalty
       if (!waveSuccess) {
         sounds.play('damage');
+        const newRetries = state.stats.waveRetries + 1;
+        // Apply -10% score penalty per retry, capped at -30%
+        const penaltyPercent = Math.min(newRetries * RETRY_SCORE_PENALTY, MAX_RETRY_PENALTY);
+        const scorePenalty = Math.floor(state.stats.score * penaltyPercent);
+        const newScore = Math.max(0, state.stats.score - scorePenalty);
+
         return {
           ...state,
           gameState: 'playing',
           stats: {
             ...state.stats,
+            score: newScore,
             ducksShot: 0,
             ducksSpawned: 0,
             bullets: DUCKS_PER_SPAWN * BULLETS_PER_DUCK,
+            waveRetries: newRetries,
           },
           ducks: [],
           timeRemaining: state.currentLevel.timePerWave,
@@ -364,7 +373,11 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
       // Wave successful - check if level complete
       if (nextWave > state.currentLevel.waves) {
         sounds.play('levelUp');
-        return { ...state, gameState: 'wave-end' };
+        return {
+          ...state,
+          gameState: 'wave-end',
+          stats: { ...state.stats, waveRetries: 0 }, // Reset retries on success
+        };
       }
 
       return {
@@ -376,6 +389,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           bullets: DUCKS_PER_SPAWN * BULLETS_PER_DUCK,
           ducksShot: 0,
           ducksSpawned: 0,
+          waveRetries: 0, // Reset retries on success
         },
         ducks: [],
         timeRemaining: state.currentLevel.timePerWave,
