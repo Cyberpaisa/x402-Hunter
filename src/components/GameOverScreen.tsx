@@ -21,23 +21,37 @@ export const GameOverScreen: React.FC = () => {
     setShowPayment(true);
   };
 
-  // Determine why the game ended
-  const getGameOverReason = () => {
-    if (stats.badDucksEscaped > 0) {
-      return {
-        title: 'Bad ducks escaped!',
-        detail: `${stats.badDucksEscaped} purple duck${stats.badDucksEscaped > 1 ? 's' : ''} escaped and took your lives`,
-        icon: '💀'
-      };
+  // Determine why the game ended based on actual reason
+  const getGameOverMessage = () => {
+    switch (stats.gameOverReason) {
+      case 'bad_ducks':
+        return {
+          title: 'Bad ducks escaped!',
+          detail: 'Purple ducks escaped and took all your lives',
+          icon: '💀'
+        };
+      case 'low_accuracy':
+        return {
+          title: 'Not enough ducks!',
+          detail: 'You need to hit at least 70% of ducks to pass',
+          icon: '🎯'
+        };
+      case 'time_up':
+        return {
+          title: 'Time ran out!',
+          detail: 'You ran out of time',
+          icon: '⏱️'
+        };
+      default:
+        return {
+          title: 'Game Over!',
+          detail: 'Better luck next time',
+          icon: '💔'
+        };
     }
-    return {
-      title: 'Out of lives!',
-      detail: 'Better luck next time',
-      icon: '💔'
-    };
   };
 
-  const reason = getGameOverReason();
+  const reason = getGameOverMessage();
 
   return (
     <>
@@ -67,10 +81,16 @@ export const GameOverScreen: React.FC = () => {
               <span className="stat-label">Level Reached</span>
               <span className="stat-value">{stats.level}</span>
             </div>
-            {stats.badDucksEscaped > 0 && (
+            {stats.gameOverReason === 'bad_ducks' && stats.badDucksEscaped > 0 && (
               <div className="stat-row danger">
                 <span className="stat-label">Bad Ducks Escaped</span>
                 <span className="stat-value">{stats.badDucksEscaped}</span>
+              </div>
+            )}
+            {stats.gameOverReason === 'low_accuracy' && (
+              <div className="stat-row danger">
+                <span className="stat-label">Accuracy</span>
+                <span className="stat-value">{Math.round((stats.totalDucksShot / (stats.totalDucksShot + stats.ducksMissed)) * 100) || 0}%</span>
               </div>
             )}
           </div>

@@ -53,6 +53,7 @@ const initialStats: GameStats = {
   rapidFireUntil: 0,
   ducksSpawned: 0,
   badDucksEscaped: 0,
+  gameOverReason: null,
 };
 
 const initialState: GameContextState = {
@@ -290,6 +291,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
             ducksMissed: newMissed,
             lives: 0,
             badDucksEscaped: state.stats.badDucksEscaped + escapedBadDucks,
+            gameOverReason: 'bad_ducks',
           },
           dogState: 'laughing',
           dogDucksHeld: 0,
@@ -320,7 +322,15 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           const newLives = state.stats.lives - 1;
           if (newLives <= 0) {
             sounds.play('gameOver');
-            return { ...state, gameState: 'game-over' };
+            return {
+              ...state,
+              gameState: 'game-over',
+              stats: {
+                ...state.stats,
+                lives: 0,
+                gameOverReason: 'low_accuracy',
+              },
+            };
           }
           return {
             ...state,

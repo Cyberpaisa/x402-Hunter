@@ -36,6 +36,8 @@ export interface GameLevel {
   pointsPerDuck: number;
 }
 
+export type GameOverReason = 'bad_ducks' | 'low_accuracy' | 'time_up' | null;
+
 export interface GameStats {
   score: number;
   level: number;
@@ -48,6 +50,7 @@ export interface GameStats {
   rapidFireUntil: number;
   ducksSpawned: number; // Track how many ducks have been spawned in current wave
   badDucksEscaped: number; // Track bad ducks that escaped (caused life loss)
+  gameOverReason: GameOverReason; // Why the game ended
 }
 
 export interface PaymentConfig {
