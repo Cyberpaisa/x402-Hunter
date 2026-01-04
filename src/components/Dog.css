@@ -1,0 +1,348 @@
+.dog {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Dog Body Container */
+.dog-body {
+  position: relative;
+  width: 80px;
+  height: 100px;
+}
+
+/* Ears */
+.dog-ear {
+  position: absolute;
+  width: 20px;
+  height: 30px;
+  background: #8B4513;
+  border-radius: 50% 50% 0 0;
+  top: -5px;
+}
+
+.dog-ear-left {
+  left: 5px;
+  transform: rotate(-15deg);
+}
+
+.dog-ear-right {
+  right: 5px;
+  transform: rotate(15deg);
+}
+
+/* Head */
+.dog-head {
+  position: absolute;
+  width: 70px;
+  height: 60px;
+  background: #D2691E;
+  border-radius: 50% 50% 40% 40%;
+  top: 10px;
+  left: 5px;
+}
+
+.dog-face {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Eyes */
+.dog-eyes {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+}
+
+.dog-eye {
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  position: relative;
+}
+
+.dog-eye::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #000;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+}
+
+.dog-eye.eye-closed {
+  height: 3px;
+  border-radius: 0;
+  background: #000;
+}
+
+.dog-eye.eye-closed::after {
+  display: none;
+}
+
+/* Nose */
+.dog-nose {
+  position: absolute;
+  width: 15px;
+  height: 12px;
+  background: #000;
+  border-radius: 50%;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Mouth */
+.dog-mouth {
+  position: absolute;
+  width: 20px;
+  height: 8px;
+  border: 2px solid #000;
+  border-top: none;
+  border-radius: 0 0 50% 50%;
+  top: 42px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: transparent;
+}
+
+.dog-mouth.mouth-open {
+  width: 25px;
+  height: 15px;
+  background: #8B0000;
+  border-radius: 0 0 50% 50%;
+}
+
+/* Torso */
+.dog-torso {
+  position: absolute;
+  width: 60px;
+  height: 50px;
+  background: #D2691E;
+  border-radius: 30% 30% 50% 50%;
+  top: 65px;
+  left: 10px;
+}
+
+/* Arms */
+.dog-arms {
+  position: absolute;
+  top: 5px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dog-arm {
+  width: 15px;
+  height: 35px;
+  background: #D2691E;
+  border-radius: 30%;
+  position: relative;
+}
+
+.dog-arm-left {
+  transform: rotate(30deg);
+  margin-left: -10px;
+}
+
+.dog-arm-right {
+  transform: rotate(-30deg);
+  margin-right: -10px;
+}
+
+/* Held duck in arms */
+.held-duck {
+  position: absolute;
+  width: 25px;
+  height: 20px;
+  background: #8B4513;
+  border-radius: 50%;
+  top: -15px;
+  left: -5px;
+}
+
+.held-duck::before {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 10px;
+  background: #8B4513;
+  border-radius: 50%;
+  top: -8px;
+  left: 6px;
+}
+
+.held-duck::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 5px;
+  background: #FFA500;
+  border-radius: 0 50% 50% 0;
+  top: -5px;
+  left: 15px;
+}
+
+/* Grass overlay for sniffing */
+.dog-grass-overlay {
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 120px;
+  height: 40px;
+  background: linear-gradient(to top, #228B22 60%, transparent);
+  z-index: 10;
+}
+
+/* ============ ANIMATIONS ============ */
+
+/* Sniffing State - Dog peeks from grass */
+.dog-sniffing {
+  animation: sniffing 2s ease-in-out;
+}
+
+.dog-sniffing .dog-body {
+  animation: sniff-move 0.3s ease-in-out infinite;
+}
+
+@keyframes sniffing {
+  0% {
+    transform: translateX(-50%) translateY(60px);
+  }
+  20% {
+    transform: translateX(-50%) translateY(20px);
+  }
+  40% {
+    transform: translateX(-70%) translateY(20px);
+  }
+  60% {
+    transform: translateX(-30%) translateY(20px);
+  }
+  80% {
+    transform: translateX(-50%) translateY(20px);
+  }
+  100% {
+    transform: translateX(-50%) translateY(60px);
+  }
+}
+
+@keyframes sniff-move {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Jumping State - Dog jumps up */
+.dog-jumping {
+  animation: jump-up 0.8s ease-out forwards;
+}
+
+@keyframes jump-up {
+  0% {
+    transform: translateX(-50%) translateY(100px);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-50px);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Celebrating State - Dog shows caught ducks */
+.dog-celebrating {
+  animation: celebrate 1.5s ease-in-out forwards;
+}
+
+.dog-celebrating .dog-arms {
+  animation: raise-arms 0.5s ease-out forwards;
+}
+
+@keyframes celebrate {
+  0% {
+    transform: translateX(-50%) translateY(100px);
+    opacity: 0;
+  }
+  20% {
+    transform: translateX(-50%) translateY(-20px);
+    opacity: 1;
+  }
+  40% {
+    transform: translateX(-50%) translateY(0);
+  }
+  60% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+  80%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes raise-arms {
+  0% {
+    transform: translateY(20px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Laughing State - Dog laughs at player */
+.dog-laughing {
+  animation: laugh 1.5s ease-in-out forwards;
+}
+
+.dog-laughing .dog-body {
+  animation: laugh-shake 0.15s ease-in-out infinite;
+}
+
+@keyframes laugh {
+  0% {
+    transform: translateX(-50%) translateY(100px);
+    opacity: 0;
+  }
+  20% {
+    transform: translateX(-50%) translateY(-20px);
+    opacity: 1;
+  }
+  40%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes laugh-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+/* Hide after animation */
+.dog-sniffing,
+.dog-celebrating,
+.dog-laughing {
+  animation-fill-mode: forwards;
+}

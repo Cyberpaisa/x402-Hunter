@@ -1,13 +1,14 @@
 import React, { useRef, useEffect } from 'react';
 import { useGame } from '../context/GameContext';
 import { DuckComponent } from './Duck';
+import { Dog } from './Dog';
 import { HUD } from './HUD';
 import { GameNotifications } from './GameNotifications';
 import { GAME_WIDTH, GAME_HEIGHT } from '../game/constants';
 import './GameCanvas.css';
 
 export const GameCanvas: React.FC = () => {
-  const { gameState, ducks, shoot, pause, resume } = useGame();
+  const { gameState, ducks, shoot, pause, resume, dogState, dogDucksHeld } = useGame();
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -65,6 +66,9 @@ export const GameCanvas: React.FC = () => {
           <DuckComponent key={duck.id} duck={duck} />
         ))}
       </div>
+
+      {/* Duck Hunt Dog */}
+      <Dog state={dogState} ducksHeld={dogDucksHeld} />
 
       <HUD />
       <GameNotifications />

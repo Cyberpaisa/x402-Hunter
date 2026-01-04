@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
 import type { Duck, GameState, GameStats, GameLevel } from '../types/game';
+import type { DogState } from '../components/Dog';
 import { LEVELS, SUCCESS_RATIO } from '../game/levels';
 import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION, DUCK_FLIGHT_TIME, DUCK_SPAWN_INTERVAL, DUCKS_PER_SPAWN, BULLETS_PER_ROUND } from '../game/constants';
 import { createDuck, updateDuckPosition, updateFallingDuck, pointDistance, checkDuckEscaped } from '../game/utils';
@@ -14,6 +15,8 @@ interface GameContextState {
   isPaid: boolean;
   walletConnected: boolean;
   walletAddress: string | null;
+  dogState: DogState;
+  dogDucksHeld: number;
 }
 
 type GameAction =
@@ -35,7 +38,8 @@ type GameAction =
   | { type: 'RESET_GAME' }
   | { type: 'UPDATE_TIME'; time: number }
   | { type: 'GO_TO_MENU' }
-  | { type: 'REQUEST_PAYMENT' };
+  | { type: 'REQUEST_PAYMENT' }
+  | { type: 'SET_DOG_STATE'; dogState: DogState; ducksHeld?: number };
 
 const initialStats: GameStats = {
   score: 0,
@@ -59,6 +63,8 @@ const initialState: GameContextState = {
   isPaid: false,
   walletConnected: false,
   walletAddress: null,
+  dogState: 'hidden',
+  dogDucksHeld: 0,
 };
 
 function gameReducer(state: GameContextState, action: GameAction): GameContextState {
@@ -123,6 +129,8 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           // Reset bullets for new round of ducks
           bullets: BULLETS_PER_ROUND,
         },
+        // Dog sniffs when new ducks appear (only on first spawn of wave)
+        dogState: alreadySpawned === 0 ? 'sniffing' : state.dogState,
       };
     }
 
@@ -207,6 +215,9 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           lives: newLives,
         },
         ducks: updatedDucks,
+        // Dog celebrates when ducks are hit
+        dogState: ducksHit > 0 ? 'celebrating' : state.dogState,
+        dogDucksHeld: ducksHit > 0 ? ducksHit : state.dogDucksHeld,
       };
     }
 
@@ -258,6 +269,9 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         sounds.play('damage');
       }
 
+      // Dog laughs when ducks escape, stays hidden if all were caught
+      const dogReaction: DogState = escapedDucks.length > 0 ? 'laughing' : 'hidden';
+
       // Check if game over from bad ducks
       if (newLives <= 0) {
         sounds.play('gameOver');
@@ -269,6 +283,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
             ducksMissed: newMissed,
             lives: 0,
           },
+          dogState: 'laughing',
         };
       }
 
@@ -280,6 +295,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           ducksMissed: newMissed,
           lives: newLives,
         },
+        dogState: dogReaction,
       };
     }
 
@@ -407,6 +423,13 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         walletAddress: state.walletAddress,
       };
 
+    case 'SET_DOG_STATE':
+      return {
+        ...state,
+        dogState: action.dogState,
+        dogDucksHeld: action.ducksHeld ?? 0,
+      };
+
     default:
       return state;
   }
@@ -427,6 +450,7 @@ interface GameContextValue extends GameContextState {
   setPaid: (paid: boolean) => void;
   requestPayment: () => void;
   goToMenu: () => void;
+  setDogState: (dogState: DogState, ducksHeld?: number) => void;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -480,6 +504,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const setPaid = useCallback((paid: boolean) => dispatch({ type: 'SET_PAID', paid }), []);
   const requestPayment = useCallback(() => dispatch({ type: 'REQUEST_PAYMENT' }), []);
   const goToMenu = useCallback(() => dispatch({ type: 'GO_TO_MENU' }), []);
+  const setDogState = useCallback((dogState: DogState, ducksHeld?: number) => {
+    dispatch({ type: 'SET_DOG_STATE', dogState, ducksHeld });
+  }, []);
 
   // Refs to access current state values in game loop without causing re-renders
   const stateRef = useRef(state);
@@ -576,6 +603,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setPaid,
     requestPayment,
     goToMenu,
+    setDogState,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
