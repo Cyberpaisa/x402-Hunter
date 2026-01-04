@@ -106,12 +106,10 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
 
       for (let i = 0; i < toSpawn; i++) {
         const duckIndex = alreadySpawned + i;
-        // Force first duck as powerup, second as bad (for variety)
+        // Only guarantee 1 bad duck per wave (powerups stay random to feel special)
         let forcedType: 'powerup' | 'bad' | null = null;
         if (duckIndex === 0 && totalDucks >= 4) {
-          forcedType = 'powerup';
-        } else if (duckIndex === 1 && totalDucks >= 4) {
-          forcedType = 'bad';
+          forcedType = 'bad'; // First duck is bad to ensure risk
         }
         newDucks.push(createDuck(state.currentLevel.duckSpeed, duckIndex, totalDucks, forcedType));
       }
