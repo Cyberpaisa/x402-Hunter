@@ -47,6 +47,7 @@ export interface GameStats {
   totalDucksShot: number;
   rapidFireUntil: number;
   ducksSpawned: number; // Track how many ducks have been spawned in current wave
+  badDucksEscaped: number; // Track bad ducks that escaped (caused life loss)
 }
 
 export interface PaymentConfig {

@@ -52,6 +52,7 @@ const initialStats: GameStats = {
   totalDucksShot: 0,
   rapidFireUntil: 0,
   ducksSpawned: 0,
+  badDucksEscaped: 0,
 };
 
 const initialState: GameContextState = {
@@ -288,6 +289,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
             ...state.stats,
             ducksMissed: newMissed,
             lives: 0,
+            badDucksEscaped: state.stats.badDucksEscaped + escapedBadDucks,
           },
           dogState: 'laughing',
           dogDucksHeld: 0,
@@ -301,6 +303,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           ...state.stats,
           ducksMissed: newMissed,
           lives: newLives,
+          badDucksEscaped: state.stats.badDucksEscaped + escapedBadDucks,
         },
         dogState: dogReaction,
         dogDucksHeld: ducksHeld,

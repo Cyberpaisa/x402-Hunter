@@ -21,11 +21,38 @@ export const GameOverScreen: React.FC = () => {
     setShowPayment(true);
   };
 
+  // Determine why the game ended
+  const getGameOverReason = () => {
+    if (stats.badDucksEscaped > 0) {
+      return {
+        title: 'Bad ducks escaped!',
+        detail: `${stats.badDucksEscaped} purple duck${stats.badDucksEscaped > 1 ? 's' : ''} escaped and took your lives`,
+        icon: '💀'
+      };
+    }
+    return {
+      title: 'Out of lives!',
+      detail: 'Better luck next time',
+      icon: '💔'
+    };
+  };
+
+  const reason = getGameOverReason();
+
   return (
     <>
       <div className="gameover-overlay">
         <div className="gameover-container">
           <h1 className="gameover-title">GAME OVER</h1>
+
+          {/* Reason for game over */}
+          <div className="gameover-reason">
+            <span className="reason-icon">{reason.icon}</span>
+            <div className="reason-text">
+              <div className="reason-title">{reason.title}</div>
+              <div className="reason-detail">{reason.detail}</div>
+            </div>
+          </div>
 
           <div className="gameover-stats">
             <div className="stat-row">
@@ -40,6 +67,12 @@ export const GameOverScreen: React.FC = () => {
               <span className="stat-label">Level Reached</span>
               <span className="stat-value">{stats.level}</span>
             </div>
+            {stats.badDucksEscaped > 0 && (
+              <div className="stat-row danger">
+                <span className="stat-label">Bad Ducks Escaped</span>
+                <span className="stat-value">{stats.badDucksEscaped}</span>
+              </div>
+            )}
           </div>
 
           <div className="gameover-actions">
