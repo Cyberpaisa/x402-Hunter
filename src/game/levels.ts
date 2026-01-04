@@ -58,7 +58,7 @@ export const LEVELS: GameLevel[] = [
     ducksPerWave: 10,
     duckSpeed: 5,
     bulletsPerWave: 16,
-    timePerWave: 18,
+    timePerWave: 15, // Consistent with Hard/Expert levels
     pointsPerDuck: 500,
   },
 ];

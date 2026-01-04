@@ -1,5 +1,5 @@
 import type { Position, Direction, Duck, DuckState, DuckType, PowerupEffect } from '../types/game';
-import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, DUCK_TYPE_CHANCES, POWERUP_HEALTH_CHANCE } from './constants';
+import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, DUCK_TYPE_CHANCES, BASE_HEALTH_CHANCE, INITIAL_LIVES } from './constants';
 
 export function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -42,7 +42,16 @@ function getDuckColor(duckType: DuckType): 'red' | 'blue' | 'green' | 'golden' |
   }
 }
 
-export function createDuck(speed: number, index: number = 0, _total: number = 1, forcedType: 'powerup' | 'bad' | null = null): Duck {
+// Calculate health powerup chance based on current lives
+// Lower lives = higher chance of health (30% base, up to 80% at 1 life)
+export function getDynamicHealthChance(currentLives: number): number {
+  const maxLives = 5;
+  const livesRatio = currentLives / maxLives;
+  // At 5 lives: 30%, at 3 lives: 50%, at 1 life: 80%
+  return BASE_HEALTH_CHANCE + (1 - livesRatio) * 0.5;
+}
+
+export function createDuck(speed: number, index: number = 0, _total: number = 1, forcedType: 'powerup' | 'bad' | null = null, currentLives: number = INITIAL_LIVES): Duck {
   // Distribute ducks across different spawn positions
   const spawnSide = index % 3; // 0 = left, 1 = center, 2 = right
   let startX: number;
@@ -94,9 +103,11 @@ export function createDuck(speed: number, index: number = 0, _total: number = 1,
   const duckType = forcedType || getDuckType();
 
   // Determine powerup effect at creation time (not when shot)
+  // Health chance increases when player has fewer lives
   let powerupEffect: PowerupEffect | undefined;
   if (duckType === 'powerup') {
-    powerupEffect = Math.random() < POWERUP_HEALTH_CHANCE ? 'health' : 'rapidfire';
+    const healthChance = getDynamicHealthChance(currentLives);
+    powerupEffect = Math.random() < healthChance ? 'health' : 'rapidfire';
   }
 
   return {

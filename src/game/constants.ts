@@ -18,7 +18,9 @@ export const DUCK_TYPE_CHANCES = {
 };
 
 export const RAPID_FIRE_DURATION = 5000; // 5 seconds in milliseconds
-export const POWERUP_HEALTH_CHANCE = 0.4; // 40% chance powerup gives health instead of rapid fire
+export const POWERUP_COOLDOWN = 10000; // 10 seconds between golden duck spawns
+// Base health chance is 30%, increases as lives decrease (see getDynamicHealthChance in utils.ts)
+export const BASE_HEALTH_CHANCE = 0.3;
 
 // Duck Hunt style mechanics
 export const DUCK_FLIGHT_TIME = 7000; // 7 seconds before duck escapes

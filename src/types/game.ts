@@ -51,6 +51,7 @@ export interface GameStats {
   ducksSpawned: number; // Track how many ducks have been spawned in current wave
   badDucksEscaped: number; // Track bad ducks that escaped (caused life loss)
   gameOverReason: GameOverReason; // Why the game ended
+  lastPowerupSpawn: number; // Timestamp of last golden duck spawn (for cooldown)
 }
 
 export interface PaymentConfig {

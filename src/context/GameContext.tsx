@@ -2,7 +2,7 @@ import React, { createContext, useContext, useReducer, useCallback, useRef, useE
 import type { Duck, GameState, GameStats, GameLevel } from '../types/game';
 import type { DogState } from '../components/Dog';
 import { LEVELS, SUCCESS_RATIO } from '../game/levels';
-import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION, DUCK_FLIGHT_TIME, DUCKS_PER_SPAWN, BULLETS_PER_DUCK } from '../game/constants';
+import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION, DUCK_FLIGHT_TIME, DUCKS_PER_SPAWN, BULLETS_PER_DUCK, POWERUP_COOLDOWN, DUCK_TYPE_CHANCES } from '../game/constants';
 import { createDuck, updateDuckPosition, updateFallingDuck, pointDistance, checkDuckEscaped } from '../game/utils';
 import sounds from '../game/sounds';
 
@@ -54,6 +54,7 @@ const initialStats: GameStats = {
   ducksSpawned: 0,
   badDucksEscaped: 0,
   gameOverReason: null,
+  lastPowerupSpawn: 0,
 };
 
 const initialState: GameContextState = {
@@ -112,11 +113,33 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
       // Spawn 2 ducks at a time (like original Duck Hunt)
       const toSpawn = Math.min(DUCKS_PER_SPAWN, remaining);
       const newDucks: Duck[] = [];
+      const now = Date.now();
+      const canSpawnPowerup = now - state.stats.lastPowerupSpawn >= POWERUP_COOLDOWN;
+      let spawnedPowerup = false;
 
       for (let i = 0; i < toSpawn; i++) {
         const duckIndex = alreadySpawned + i;
-        // All ducks are random - no forced types
-        newDucks.push(createDuck(state.currentLevel.duckSpeed, duckIndex, totalDucks, null));
+
+        // Determine duck type with powerup cooldown
+        let forcedType: 'powerup' | 'bad' | null = null;
+        const rand = Math.random();
+
+        if (rand < DUCK_TYPE_CHANCES.normal) {
+          forcedType = null; // normal
+        } else if (rand < DUCK_TYPE_CHANCES.normal + DUCK_TYPE_CHANCES.powerup) {
+          // Only allow powerup if cooldown has passed and we haven't spawned one this batch
+          if (canSpawnPowerup && !spawnedPowerup) {
+            forcedType = 'powerup';
+            spawnedPowerup = true;
+          } else {
+            forcedType = null; // Convert to normal if on cooldown
+          }
+        } else {
+          forcedType = 'bad';
+        }
+
+        // Pass currentLives so powerup can adjust health chance
+        newDucks.push(createDuck(state.currentLevel.duckSpeed, duckIndex, totalDucks, forcedType, state.stats.lives));
       }
 
       return {
@@ -125,8 +148,8 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         stats: {
           ...state.stats,
           ducksSpawned: alreadySpawned + toSpawn,
-          // Give bullets based on ducks spawned (2 bullets per duck)
           bullets: toSpawn * BULLETS_PER_DUCK,
+          lastPowerupSpawn: spawnedPowerup ? now : state.stats.lastPowerupSpawn,
         },
         // Dog sniffs when new ducks appear (only on first spawn of wave)
         dogState: alreadySpawned === 0 ? 'sniffing' : state.dogState,
@@ -143,7 +166,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
       let ducksHit = 0;
       let healthPowerup = false;
       let rapidFirePowerup = false;
-      let hitBadDuck = false;
+      let badDucksHit = 0;
 
       const updatedDucks = state.ducks.map((duck) => {
         if (duck.state === 'flying') {
@@ -165,7 +188,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
                 sounds.play('powerUp');
               }
             } else if (duck.duckType === 'bad') {
-              hitBadDuck = true;
+              badDucksHit++;
               sounds.play('duckHit');
             } else {
               sounds.play('duckHit');
@@ -197,9 +220,10 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         bonusPoints += 500;
       }
 
-      if (hitBadDuck) {
-        // Bad duck gives negative points but no damage when shot
-        bonusPoints -= 200;
+      if (badDucksHit > 0) {
+        // Bad ducks give small reward when shot (+50 pts instead of normal points)
+        // Subtract the normal points they would get, add 50 per bad duck
+        bonusPoints += badDucksHit * (50 - state.currentLevel.pointsPerDuck);
       }
 
       return {
@@ -314,31 +338,31 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
 
     case 'NEXT_WAVE': {
       const nextWave = state.stats.wave + 1;
+
+      // Check if current wave was successful (per-wave accuracy check)
+      const requiredDucks = Math.ceil(state.currentLevel.ducksPerWave * SUCCESS_RATIO);
+      const waveSuccess = state.stats.ducksShot >= requiredDucks;
+
+      // If wave failed, repeat it (no life penalty)
+      if (!waveSuccess) {
+        sounds.play('damage');
+        return {
+          ...state,
+          gameState: 'playing',
+          stats: {
+            ...state.stats,
+            ducksShot: 0,
+            ducksSpawned: 0,
+            bullets: DUCKS_PER_SPAWN * BULLETS_PER_DUCK,
+          },
+          ducks: [],
+          timeRemaining: state.currentLevel.timePerWave,
+          dogState: 'hidden',
+        };
+      }
+
+      // Wave successful - check if level complete
       if (nextWave > state.currentLevel.waves) {
-        const totalDucks = state.currentLevel.waves * state.currentLevel.ducksPerWave;
-        const hitRatio = state.stats.ducksShot / totalDucks;
-
-        if (hitRatio < SUCCESS_RATIO) {
-          const newLives = state.stats.lives - 1;
-          if (newLives <= 0) {
-            sounds.play('gameOver');
-            return {
-              ...state,
-              gameState: 'game-over',
-              stats: {
-                ...state.stats,
-                lives: 0,
-                gameOverReason: 'low_accuracy',
-              },
-            };
-          }
-          return {
-            ...state,
-            stats: { ...state.stats, lives: newLives },
-            gameState: 'wave-end',
-          };
-        }
-
         sounds.play('levelUp');
         return { ...state, gameState: 'wave-end' };
       }
