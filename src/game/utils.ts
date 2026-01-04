@@ -109,6 +109,7 @@ export function createDuck(speed: number, index: number = 0, _total: number = 1,
     animationFrame: 0,
     duckType,
     powerupEffect,
+    spawnTime: Date.now(),
   };
 }
 

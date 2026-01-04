@@ -17,6 +17,7 @@ export interface Duck {
   animationFrame: number;
   duckType: DuckType;
   powerupEffect?: PowerupEffect; // Only for powerup ducks
+  spawnTime: number; // Timestamp when duck appeared (for individual timeout)
 }
 
 export type DuckState = 'flying' | 'shot' | 'falling' | 'escaped';
@@ -45,6 +46,7 @@ export interface GameStats {
   lives: number;
   totalDucksShot: number;
   rapidFireUntil: number;
+  ducksSpawned: number; // Track how many ducks have been spawned in current wave
 }
 
 export interface PaymentConfig {

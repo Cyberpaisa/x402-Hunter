@@ -20,6 +20,12 @@ export const DUCK_TYPE_CHANCES = {
 export const RAPID_FIRE_DURATION = 5000; // 5 seconds in milliseconds
 export const POWERUP_HEALTH_CHANCE = 0.4; // 40% chance powerup gives health instead of rapid fire
 
+// Duck Hunt style mechanics
+export const DUCK_FLIGHT_TIME = 6000; // 6 seconds before duck escapes (like original Duck Hunt)
+export const DUCK_SPAWN_INTERVAL = 2500; // 2.5 seconds between duck spawns
+export const DUCKS_PER_SPAWN = 2; // Spawn 1-2 ducks at a time (like original)
+export const BULLETS_PER_ROUND = 3; // 3 bullets per round of ducks (like original)
+
 export const PAYMENT_CONFIG = {
   pricePerGame: '0.10',
   pricePerLife: '0.05',
