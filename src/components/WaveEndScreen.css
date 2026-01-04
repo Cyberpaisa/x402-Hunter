@@ -217,3 +217,133 @@
 .wave-progress {
   margin-bottom: 25px;
 }
+
+/* Level Complete Style */
+.waveend-container.level-complete {
+  border-color: #ffd700;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+}
+
+.level-complete .waveend-title {
+  color: #ffd700;
+}
+
+/* Victory Style */
+.waveend-container.victory {
+  border-color: #9c27b0;
+  box-shadow: 0 0 40px rgba(156, 39, 176, 0.5), 0 0 60px rgba(255, 215, 0, 0.3);
+  background: linear-gradient(135deg, rgba(30, 20, 50, 0.95), rgba(50, 20, 70, 0.95));
+}
+
+.victory .waveend-title {
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  }
+  to {
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.4);
+  }
+}
+
+/* Level Progress Bar */
+.level-progress-bar {
+  margin-bottom: 25px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.level-info {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.wave-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.wave-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.wave-dot.completed {
+  background: #4caf50;
+  border-color: #4caf50;
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+}
+
+.wave-dot.current {
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* Next Wave/Level Info */
+.next-info {
+  margin: 20px 0;
+  padding: 15px 20px;
+  background: rgba(76, 175, 80, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 10px;
+}
+
+.next-info.level-up {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+.next-label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.next-details {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Difficulty Changes */
+.difficulty-changes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.change-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.change-icon {
+  font-size: 14px;
+}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useGame } from '../context/GameContext';
 import { PaymentModal } from './PaymentModal';
 import { PAYMENT_CONFIG } from '../game/constants';
-import { SUCCESS_RATIO } from '../game/levels';
+import { SUCCESS_RATIO, LEVELS } from '../game/levels';
 import './WaveEndScreen.css';
 
 export const WaveEndScreen: React.FC = () => {
@@ -15,20 +15,31 @@ export const WaveEndScreen: React.FC = () => {
   const requiredDucks = Math.ceil(currentLevel.ducksPerWave * SUCCESS_RATIO);
   const waveSuccess = stats.ducksShot >= requiredDucks;
   const levelComplete = isLastWave && waveSuccess;
+  const isLastLevel = stats.level >= LEVELS.length;
+  const nextLevelData = !isLastLevel ? LEVELS[stats.level] : null;
 
   const getMessage = () => {
+    if (levelComplete && isLastLevel) {
+      return { title: '🏆 GAME COMPLETE!', subtitle: 'You are a Master Hunter!', type: 'victory' };
+    }
     if (levelComplete) {
-      return { title: 'LEVEL COMPLETE!', subtitle: 'Ready for the next challenge?', type: 'success' };
+      return {
+        title: '⭐ LEVEL COMPLETE!',
+        subtitle: `${currentLevel.title} finished! Next: ${nextLevelData?.title}`,
+        type: 'level-complete'
+      };
     }
     if (waveSuccess) {
-      return { title: 'WAVE CLEAR!', subtitle: `Wave ${stats.wave} complete`, type: 'success' };
+      return {
+        title: '✓ WAVE CLEAR!',
+        subtitle: `Wave ${stats.wave}/${currentLevel.waves} • Level: ${currentLevel.title}`,
+        type: 'success'
+      };
     }
-    // Wave failed but still have lives
     if (stats.lives > 0) {
-      return { title: 'WAVE OVER', subtitle: 'Keep trying!', type: 'neutral' };
+      return { title: 'WAVE OVER', subtitle: 'Some ducks escaped! Try again', type: 'neutral' };
     }
-    // No lives left
-    return { title: 'NO LIVES LEFT', subtitle: 'Buy a life to continue', type: 'fail' };
+    return { title: '💔 NO LIVES LEFT', subtitle: 'Buy a life to continue', type: 'fail' };
   };
 
   const message = getMessage();
@@ -45,8 +56,12 @@ export const WaveEndScreen: React.FC = () => {
     setShowPayment(true);
   };
 
-  // Can always continue if you have lives (regardless of wave success)
   const canContinue = stats.lives > 0;
+
+  // Calculate what's next
+  const nextWaveNum = stats.wave + 1;
+  const showNextWaveInfo = !isLastWave && waveSuccess;
+  const showNextLevelInfo = levelComplete && nextLevelData;
 
   return (
     <>
@@ -54,6 +69,21 @@ export const WaveEndScreen: React.FC = () => {
         <div className={`waveend-container ${message.type}`}>
           <h1 className="waveend-title">{message.title}</h1>
           <p className="waveend-subtitle">{message.subtitle}</p>
+
+          {/* Current Progress */}
+          <div className="level-progress-bar">
+            <div className="level-info">
+              Level {stats.level}: {currentLevel.title}
+            </div>
+            <div className="wave-dots">
+              {Array.from({ length: currentLevel.waves }).map((_, i) => (
+                <span
+                  key={i}
+                  className={`wave-dot ${i < stats.wave ? 'completed' : ''} ${i === stats.wave - 1 ? 'current' : ''}`}
+                />
+              ))}
+            </div>
+          </div>
 
           <div className="waveend-stats">
             <div className="stat-box">
@@ -81,22 +111,45 @@ export const WaveEndScreen: React.FC = () => {
             )}
           </div>
 
-          <div className="wave-progress">
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${Math.min(100, (stats.ducksShot / requiredDucks) * 100)}%` }}
-              />
+          {/* Next Wave Info */}
+          {showNextWaveInfo && (
+            <div className="next-info">
+              <div className="next-label">Next Wave ({nextWaveNum}/{currentLevel.waves})</div>
+              <div className="next-details">
+                {currentLevel.ducksPerWave} ducks • {currentLevel.timePerWave}s time
+              </div>
             </div>
-            <span className="progress-text">
-              {stats.ducksShot} / {requiredDucks} ducks needed ({Math.round(SUCCESS_RATIO * 100)}%)
-            </span>
-          </div>
+          )}
+
+          {/* Next Level Info - Show difficulty changes */}
+          {showNextLevelInfo && (
+            <div className="next-info level-up">
+              <div className="next-label">🆙 Next Level: {nextLevelData.title}</div>
+              <div className="difficulty-changes">
+                <div className="change-item">
+                  <span className="change-icon">🦆</span>
+                  <span>{currentLevel.ducksPerWave} → {nextLevelData.ducksPerWave} ducks</span>
+                </div>
+                <div className="change-item">
+                  <span className="change-icon">⚡</span>
+                  <span>Speed +{Math.round((nextLevelData.duckSpeed - currentLevel.duckSpeed) / currentLevel.duckSpeed * 100)}%</span>
+                </div>
+                <div className="change-item">
+                  <span className="change-icon">⏱️</span>
+                  <span>{nextLevelData.timePerWave}s per wave</span>
+                </div>
+                <div className="change-item">
+                  <span className="change-icon">💰</span>
+                  <span>{nextLevelData.pointsPerDuck} pts/duck</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="waveend-actions">
             {canContinue && (
               <button className="waveend-button next-btn" onClick={handleNext}>
-                {levelComplete ? 'Next Level →' : 'Next Wave →'}
+                {levelComplete ? `Start ${nextLevelData?.title || 'Victory'} →` : `Wave ${nextWaveNum} →`}
               </button>
             )}
 

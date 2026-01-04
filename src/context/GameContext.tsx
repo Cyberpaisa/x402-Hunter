@@ -212,9 +212,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           lives: newLives,
         },
         ducks: updatedDucks,
-        // Dog celebrates when ducks are hit
-        dogState: ducksHit > 0 ? 'celebrating' : state.dogState,
-        dogDucksHeld: ducksHit > 0 ? ducksHit : state.dogDucksHeld,
+        // Dog only appears at END_WAVE, not during gameplay
       };
     }
 
@@ -254,6 +252,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
 
     case 'END_WAVE': {
       const escapedDucks = state.ducks.filter((d) => d.state === 'escaped' || d.state === 'flying');
+      const shotDucks = state.ducks.filter((d) => d.state === 'falling' || d.state === 'shot');
       const newMissed = state.stats.ducksMissed + escapedDucks.length;
 
       // Bad ducks that escape damage the player
@@ -266,8 +265,18 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         sounds.play('damage');
       }
 
-      // Dog laughs when ducks escape, stays hidden if all were caught
-      const dogReaction: DogState = escapedDucks.length > 0 ? 'laughing' : 'hidden';
+      // Dog reaction at end of wave:
+      // - Celebrates if ducks were shot and none escaped
+      // - Laughs if any ducks escaped
+      let dogReaction: DogState = 'hidden';
+      let ducksHeld = 0;
+
+      if (escapedDucks.length > 0) {
+        dogReaction = 'laughing';
+      } else if (shotDucks.length > 0) {
+        dogReaction = 'celebrating';
+        ducksHeld = shotDucks.length;
+      }
 
       // Check if game over from bad ducks
       if (newLives <= 0) {
@@ -281,6 +290,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
             lives: 0,
           },
           dogState: 'laughing',
+          dogDucksHeld: 0,
         };
       }
 
@@ -293,6 +303,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           lives: newLives,
         },
         dogState: dogReaction,
+        dogDucksHeld: ducksHeld,
       };
     }
 
