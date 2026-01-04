@@ -27,7 +27,8 @@ export const RETRY_SCORE_PENALTY = 0.10; // 10% per retry
 export const MAX_RETRY_PENALTY = 0.30; // Cap at 30%
 
 // Duck Hunt style mechanics
-export const DUCK_FLIGHT_TIME = 7000; // 7 seconds before duck escapes
+export const DUCK_FLIGHT_TIME = 7000; // 7 seconds before duck is removed
+export const DUCK_ESCAPE_TIME = 5000; // After 5 seconds, duck tries to escape upward
 export const BAD_DUCK_DASH_TIME = 2000; // Last 2 seconds - bad ducks get erratic
 export const DUCK_SPAWN_INTERVAL = 3000; // 3 seconds between duck spawns
 export const DUCKS_PER_SPAWN = 2; // Spawn 2 ducks at a time (like original)

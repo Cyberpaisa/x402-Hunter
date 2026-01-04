@@ -1,5 +1,5 @@
 import type { Position, Direction, Duck, DuckState, DuckType, PowerupEffect } from '../types/game';
-import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, DUCK_TYPE_CHANCES, BASE_HEALTH_CHANCE, INITIAL_LIVES, DUCK_FLIGHT_TIME, BAD_DUCK_DASH_TIME } from './constants';
+import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, DUCK_TYPE_CHANCES, BASE_HEALTH_CHANCE, INITIAL_LIVES, DUCK_FLIGHT_TIME, DUCK_ESCAPE_TIME, BAD_DUCK_DASH_TIME } from './constants';
 
 export function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -127,35 +127,48 @@ export function createDuck(speed: number, index: number = 0, _total: number = 1,
 export function updateDuckPosition(duck: Duck, deltaTime: number): Duck {
   if (duck.state !== 'flying') return duck;
 
-  // Check if bad duck is in "late dash" mode (last 2 seconds)
   const flightTime = Date.now() - duck.spawnTime;
+
+  // Check if duck is trying to escape (after DUCK_ESCAPE_TIME)
+  const isTryingToEscape = flightTime >= DUCK_ESCAPE_TIME;
+
+  // Check if bad duck is in "late dash" mode (last 2 seconds)
   const isLateDash = duck.duckType === 'bad' && flightTime >= (DUCK_FLIGHT_TIME - BAD_DUCK_DASH_TIME);
 
-  // Speed multiplier for late dash (1.5x faster + erratic)
-  const speedMultiplier = isLateDash ? 1.5 : 1.0;
+  // Speed multiplier: late dash = 1.5x, escaping = 1.3x
+  const speedMultiplier = isLateDash ? 1.5 : (isTryingToEscape ? 1.3 : 1.0);
 
   let newX = duck.position.x + duck.velocity.x * deltaTime * 60 * speedMultiplier;
   let newY = duck.position.y + duck.velocity.y * deltaTime * 60 * speedMultiplier;
   let newVx = duck.velocity.x;
   let newVy = duck.velocity.y;
 
+  // Horizontal bounds - always bounce
   if (newX <= 0 || newX >= GAME_WIDTH - DUCK_WIDTH) {
     newVx = -newVx;
     newX = Math.max(0, Math.min(GAME_WIDTH - DUCK_WIDTH, newX));
   }
 
-  if (newY <= 0) {
+  // Top bound - bounce only if not trying to escape
+  if (newY <= 0 && !isTryingToEscape) {
     newVy = Math.abs(newVy) * 0.8;
     newY = 0;
   }
 
+  // Bottom bound - always bounce
   if (newY >= GAME_HEIGHT - DUCK_HEIGHT) {
     newVy = -Math.abs(newVy);
     newY = GAME_HEIGHT - DUCK_HEIGHT;
   }
 
+  // When trying to escape, force upward movement
+  if (isTryingToEscape && newVy > -2) {
+    newVy = -Math.abs(newVy) - 2; // Ensure strong upward velocity
+  }
+
   // More erratic movement for bad ducks in late dash (20% chance vs 2% normal)
-  const directionChangeChance = isLateDash ? 0.20 : 0.02;
+  // Don't change direction randomly when escaping (they should go straight up)
+  const directionChangeChance = isLateDash ? 0.20 : (isTryingToEscape ? 0 : 0.02);
   if (Math.random() < directionChangeChance) {
     // Bigger angle changes during late dash
     const angleChange = isLateDash
