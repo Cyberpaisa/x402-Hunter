@@ -22,8 +22,13 @@ export const POWERUP_COOLDOWN = 10000; // 10 seconds between golden duck spawns
 // Base health chance is 30%, increases as lives decrease (see getDynamicHealthChance in utils.ts)
 export const BASE_HEALTH_CHANCE = 0.3;
 
+// Retry penalty: -10% score per retry, max -30%
+export const RETRY_SCORE_PENALTY = 0.10; // 10% per retry
+export const MAX_RETRY_PENALTY = 0.30; // Cap at 30%
+
 // Duck Hunt style mechanics
 export const DUCK_FLIGHT_TIME = 7000; // 7 seconds before duck escapes
+export const BAD_DUCK_DASH_TIME = 2000; // Last 2 seconds - bad ducks get erratic
 export const DUCK_SPAWN_INTERVAL = 3000; // 3 seconds between duck spawns
 export const DUCKS_PER_SPAWN = 2; // Spawn 2 ducks at a time (like original)
 export const BULLETS_PER_DUCK = 2; // 2 bullets per duck (so 2 ducks = 4 bullets)

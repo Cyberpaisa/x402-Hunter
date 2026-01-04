@@ -1,5 +1,5 @@
 import type { Position, Direction, Duck, DuckState, DuckType, PowerupEffect } from '../types/game';
-import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, DUCK_TYPE_CHANCES, BASE_HEALTH_CHANCE, INITIAL_LIVES } from './constants';
+import { GAME_WIDTH, GAME_HEIGHT, DUCK_WIDTH, DUCK_HEIGHT, DUCK_COLORS, DUCK_TYPE_CHANCES, BASE_HEALTH_CHANCE, INITIAL_LIVES, DUCK_FLIGHT_TIME, BAD_DUCK_DASH_TIME } from './constants';
 
 export function generateId(): string {
   return Math.random().toString(36).substring(2, 9);
@@ -127,8 +127,15 @@ export function createDuck(speed: number, index: number = 0, _total: number = 1,
 export function updateDuckPosition(duck: Duck, deltaTime: number): Duck {
   if (duck.state !== 'flying') return duck;
 
-  let newX = duck.position.x + duck.velocity.x * deltaTime * 60;
-  let newY = duck.position.y + duck.velocity.y * deltaTime * 60;
+  // Check if bad duck is in "late dash" mode (last 2 seconds)
+  const flightTime = Date.now() - duck.spawnTime;
+  const isLateDash = duck.duckType === 'bad' && flightTime >= (DUCK_FLIGHT_TIME - BAD_DUCK_DASH_TIME);
+
+  // Speed multiplier for late dash (1.5x faster + erratic)
+  const speedMultiplier = isLateDash ? 1.5 : 1.0;
+
+  let newX = duck.position.x + duck.velocity.x * deltaTime * 60 * speedMultiplier;
+  let newY = duck.position.y + duck.velocity.y * deltaTime * 60 * speedMultiplier;
   let newVx = duck.velocity.x;
   let newVy = duck.velocity.y;
 
@@ -147,8 +154,13 @@ export function updateDuckPosition(duck: Duck, deltaTime: number): Duck {
     newY = GAME_HEIGHT - DUCK_HEIGHT;
   }
 
-  if (Math.random() < 0.02) {
-    const angleChange = (Math.random() - 0.5) * 0.5;
+  // More erratic movement for bad ducks in late dash (20% chance vs 2% normal)
+  const directionChangeChance = isLateDash ? 0.20 : 0.02;
+  if (Math.random() < directionChangeChance) {
+    // Bigger angle changes during late dash
+    const angleChange = isLateDash
+      ? (Math.random() - 0.5) * 1.5  // Up to 85° change
+      : (Math.random() - 0.5) * 0.5; // Normal ~30° change
     const speed = Math.sqrt(newVx * newVx + newVy * newVy);
     const currentAngle = Math.atan2(newVy, newVx);
     newVx = Math.cos(currentAngle + angleChange) * speed;
