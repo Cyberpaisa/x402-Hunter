@@ -180,3 +180,120 @@
 .menu-button:hover {
   background: rgba(139, 69, 19, 0.1);
 }
+
+/* Golden Ticket */
+.golden-ticket {
+  background: linear-gradient(135deg, #ffd700 0%, #ffb347 50%, #ffd700 100%);
+  border: 3px solid #b8860b;
+  border-radius: 12px;
+  padding: 0;
+  margin: 20px auto;
+  max-width: 320px;
+  box-shadow: 0 8px 32px rgba(184, 134, 11, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.3);
+  animation: ticket-glow 2s ease-in-out infinite;
+  overflow: hidden;
+}
+
+@keyframes ticket-glow {
+  0%, 100% {
+    box-shadow: 0 8px 32px rgba(184, 134, 11, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 48px rgba(255, 215, 0, 0.6), inset 0 0 30px rgba(255, 255, 255, 0.5);
+  }
+}
+
+.ticket-header {
+  background: linear-gradient(90deg, #8b4513, #654321, #8b4513);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ticket-icon {
+  font-size: 24px;
+}
+
+.ticket-title {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 14px;
+  color: #ffd700;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.ticket-body {
+  padding: 15px 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.ticket-id {
+  font-family: monospace;
+  font-size: 11px;
+  color: #654321;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.ticket-season {
+  font-size: 12px;
+  color: #8b4513;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.ticket-raffle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(139, 69, 19, 0.2);
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.raffle-entries {
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  font-size: 20px;
+  color: #8b4513;
+}
+
+.raffle-label {
+  font-size: 11px;
+  color: #654321;
+  text-transform: uppercase;
+}
+
+/* Season Info */
+.season-info {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.season-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.season-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.season-label {
+  font-size: 10px;
+  color: #654321;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
