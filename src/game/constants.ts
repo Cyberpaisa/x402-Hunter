@@ -37,11 +37,11 @@ export const PAYMENT_CONFIG = {
   pricePerGame: '0.10',
   pricePerLife: '0.05',
   priceToContinue: '0.15',
-  recipient: '0x209693BC6afC0C5328bA36FAF03c514eaD62d1B0',
+  recipient: import.meta.env.VITE_PAYMENT_RECIPIENT || '0x209693BC6afC0C5328bA36FAF03c514eaD62d1B0',
   chain: 'avalanche' as const,
 };
 
-export const FACILITATOR_URL = 'https://facilitator.ultravioletadao.xyz';
+export const FACILITATOR_URL = import.meta.env.VITE_FACILITATOR_URL || 'https://facilitator.ultravioletadao.xyz';
 
-// Set to true to skip payments during development/testing
-export const DEV_MODE = true;
+// Set to 'false' in production to enable real payments
+export const DEV_MODE = import.meta.env.VITE_DEV_MODE === 'true';
