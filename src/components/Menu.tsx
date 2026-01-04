@@ -1,6 +1,7 @@
 import React from 'react';
 import { useGame } from '../context/GameContext';
 import { PAYMENT_CONFIG } from '../game/constants';
+import { Leaderboard } from './Leaderboard';
 import './Menu.css';
 
 export const Menu: React.FC = () => {
@@ -60,6 +61,8 @@ export const Menu: React.FC = () => {
             <span className="wallet-connected">✓ Wallet Connected</span>
           </div>
         )}
+
+        <Leaderboard compact />
 
         <div className="menu-footer">
           <p>Powered by x402 Protocol</p>
