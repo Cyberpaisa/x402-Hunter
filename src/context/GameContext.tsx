@@ -2,7 +2,7 @@ import React, { createContext, useContext, useReducer, useCallback, useRef, useE
 import type { Duck, GameState, GameStats, GameLevel } from '../types/game';
 import type { DogState } from '../components/Dog';
 import { LEVELS, SUCCESS_RATIO } from '../game/levels';
-import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION, DUCK_FLIGHT_TIME, DUCK_SPAWN_INTERVAL, DUCKS_PER_SPAWN, BULLETS_PER_ROUND } from '../game/constants';
+import { INITIAL_LIVES, HIT_RADIUS, RAPID_FIRE_DURATION, DUCK_FLIGHT_TIME, DUCKS_PER_SPAWN, BULLETS_PER_DUCK } from '../game/constants';
 import { createDuck, updateDuckPosition, updateFallingDuck, pointDistance, checkDuckEscaped } from '../game/utils';
 import sounds from '../game/sounds';
 
@@ -45,7 +45,7 @@ const initialStats: GameStats = {
   score: 0,
   level: 1,
   wave: 1,
-  bullets: BULLETS_PER_ROUND,
+  bullets: DUCKS_PER_SPAWN * BULLETS_PER_DUCK,
   ducksShot: 0,
   ducksMissed: 0,
   lives: INITIAL_LIVES,
@@ -89,12 +89,13 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         gameState: 'playing',
         stats: {
           ...initialStats,
-          bullets: BULLETS_PER_ROUND,
+          bullets: DUCKS_PER_SPAWN * BULLETS_PER_DUCK,
           ducksSpawned: 0,
         },
         ducks: [],
         currentLevel: level,
         timeRemaining: level.timePerWave,
+        dogState: 'hidden',
       };
     }
 
@@ -106,18 +107,14 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
       // Don't spawn if all ducks already spawned
       if (remaining <= 0) return state;
 
-      // Spawn 1-2 ducks at a time (like original Duck Hunt)
+      // Spawn 2 ducks at a time (like original Duck Hunt)
       const toSpawn = Math.min(DUCKS_PER_SPAWN, remaining);
       const newDucks: Duck[] = [];
 
       for (let i = 0; i < toSpawn; i++) {
         const duckIndex = alreadySpawned + i;
-        // Only guarantee 1 bad duck per wave (powerups stay random to feel special)
-        let forcedType: 'powerup' | 'bad' | null = null;
-        if (duckIndex === 0 && totalDucks >= 4) {
-          forcedType = 'bad'; // First duck is bad to ensure risk
-        }
-        newDucks.push(createDuck(state.currentLevel.duckSpeed, duckIndex, totalDucks, forcedType));
+        // All ducks are random - no forced types
+        newDucks.push(createDuck(state.currentLevel.duckSpeed, duckIndex, totalDucks, null));
       }
 
       return {
@@ -126,8 +123,8 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         stats: {
           ...state.stats,
           ducksSpawned: alreadySpawned + toSpawn,
-          // Reset bullets for new round of ducks
-          bullets: BULLETS_PER_ROUND,
+          // Give bullets based on ducks spawned (2 bullets per duck)
+          bullets: toSpawn * BULLETS_PER_DUCK,
         },
         // Dog sniffs when new ducks appear (only on first spawn of wave)
         dogState: alreadySpawned === 0 ? 'sniffing' : state.dogState,
@@ -328,12 +325,13 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         stats: {
           ...state.stats,
           wave: nextWave,
-          bullets: BULLETS_PER_ROUND,
+          bullets: DUCKS_PER_SPAWN * BULLETS_PER_DUCK,
           ducksShot: 0,
           ducksSpawned: 0,
         },
         ducks: [],
         timeRemaining: state.currentLevel.timePerWave,
+        dogState: 'hidden',
       };
     }
 
@@ -352,7 +350,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           ...state.stats,
           level: nextLevelIndex + 1,
           wave: 1,
-          bullets: BULLETS_PER_ROUND,
+          bullets: DUCKS_PER_SPAWN * BULLETS_PER_DUCK,
           ducksShot: 0,
           ducksMissed: 0,
           ducksSpawned: 0,
@@ -360,6 +358,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
         currentLevel: nextLevel,
         ducks: [],
         timeRemaining: nextLevel.timePerWave,
+        dogState: 'hidden',
       };
     }
 
@@ -374,10 +373,11 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           wave: 1,
           ducksShot: 0,
           ducksSpawned: 0,
-          bullets: BULLETS_PER_ROUND,
+          bullets: DUCKS_PER_SPAWN * BULLETS_PER_DUCK,
         },
         ducks: [],
         timeRemaining: state.currentLevel.timePerWave,
+        dogState: 'hidden',
       };
     }
 
@@ -389,12 +389,13 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
           ...state.stats,
           lives: INITIAL_LIVES,
           wave: 1,
-          bullets: BULLETS_PER_ROUND,
+          bullets: DUCKS_PER_SPAWN * BULLETS_PER_DUCK,
           ducksShot: 0,
           ducksSpawned: 0,
         },
         ducks: [],
         timeRemaining: state.currentLevel.timePerWave,
+        dogState: 'hidden',
       };
     }
 
@@ -465,8 +466,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const startGame = useCallback(() => {
     dispatch({ type: 'START_GAME' });
     waveStartTimeRef.current = performance.now();
-    lastSpawnTimeRef.current = performance.now();
-    setTimeout(() => dispatch({ type: 'SPAWN_DUCKS' }), 500);
+    lastSpawnTimeRef.current = 0; // Reset to 0 so game loop spawns immediately
   }, []);
 
   const shoot = useCallback((x: number, y: number) => {
@@ -478,27 +478,23 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const nextWave = useCallback(() => {
     dispatch({ type: 'NEXT_WAVE' });
     waveStartTimeRef.current = performance.now();
-    lastSpawnTimeRef.current = performance.now();
-    setTimeout(() => dispatch({ type: 'SPAWN_DUCKS' }), 500);
+    lastSpawnTimeRef.current = 0;
   }, []);
   const nextLevel = useCallback(() => {
     dispatch({ type: 'NEXT_LEVEL' });
     waveStartTimeRef.current = performance.now();
-    lastSpawnTimeRef.current = performance.now();
-    setTimeout(() => dispatch({ type: 'SPAWN_DUCKS' }), 500);
+    lastSpawnTimeRef.current = 0;
   }, []);
   const resetGame = useCallback(() => dispatch({ type: 'RESET_GAME' }), []);
   const buyLife = useCallback(() => {
     dispatch({ type: 'BUY_LIFE' });
     waveStartTimeRef.current = performance.now();
-    lastSpawnTimeRef.current = performance.now();
-    setTimeout(() => dispatch({ type: 'SPAWN_DUCKS' }), 500);
+    lastSpawnTimeRef.current = 0;
   }, []);
   const continueGame = useCallback(() => {
     dispatch({ type: 'CONTINUE_GAME' });
     waveStartTimeRef.current = performance.now();
-    lastSpawnTimeRef.current = performance.now();
-    setTimeout(() => dispatch({ type: 'SPAWN_DUCKS' }), 500);
+    lastSpawnTimeRef.current = 0;
   }, []);
   const setWallet = useCallback((address: string | null) => dispatch({ type: 'SET_WALLET', address }), []);
   const setPaid = useCallback((paid: boolean) => dispatch({ type: 'SET_PAID', paid }), []);
@@ -542,34 +538,33 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
       // Check current state
       const currentDucks = stateRef.current.ducks;
-      const currentBullets = stateRef.current.stats.bullets;
       const ducksSpawned = stateRef.current.stats.ducksSpawned;
       const totalDucksInWave = stateRef.current.currentLevel.ducksPerWave;
 
-      const flyingDucks = currentDucks.filter((d) => d.state === 'flying').length;
       const activeDucks = currentDucks.filter((d) => d.state === 'flying' || d.state === 'shot' || d.state === 'falling').length;
       const moreDucksToSpawn = ducksSpawned < totalDucksInWave;
 
-      // Duck Hunt style: spawn next batch when current ducks are gone
-      // or after spawn interval if there's room for more
-      const timeSinceLastSpawn = currentTime - lastSpawnTimeRef.current;
-      const shouldSpawnMore = moreDucksToSpawn && (
-        (activeDucks === 0) || // All current ducks dealt with
-        (timeSinceLastSpawn >= DUCK_SPAWN_INTERVAL && flyingDucks === 0) // Interval passed and no flying ducks
-      );
+      // Spawn next batch ONLY when all current ducks are completely done (not flying, not falling)
+      // This ensures we wait for the player to deal with current ducks before spawning more
+      const shouldSpawnMore = moreDucksToSpawn && activeDucks === 0;
 
       if (shouldSpawnMore) {
-        lastSpawnTimeRef.current = currentTime;
-        dispatch({ type: 'SPAWN_DUCKS' });
+        // Add a small delay before spawning to let animations finish
+        const timeSinceLastSpawn = currentTime - lastSpawnTimeRef.current;
+        if (timeSinceLastSpawn >= 500) { // 500ms delay between batches
+          lastSpawnTimeRef.current = currentTime;
+          dispatch({ type: 'SPAWN_DUCKS' });
+        }
       }
 
-      // End wave conditions
+      // End wave conditions - only when ALL ducks are spawned AND dealt with
       const allDucksSpawned = ducksSpawned >= totalDucksInWave;
       const allDucksDone = allDucksSpawned && activeDucks === 0;
-      const outOfBullets = currentBullets <= 0 && flyingDucks > 0 && !moreDucksToSpawn;
       const timeUp = remaining <= 0;
 
-      if (allDucksDone || outOfBullets || timeUp) {
+      // Don't end wave for "out of bullets" if there are more ducks to spawn
+      // Player gets new bullets with each spawn batch
+      if (allDucksDone || timeUp) {
         dispatch({ type: 'END_WAVE' });
         return;
       }
