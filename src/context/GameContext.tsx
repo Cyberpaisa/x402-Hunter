@@ -254,7 +254,7 @@ function gameReducer(state: GameContextState, action: GameAction): GameContextSt
 
     case 'END_WAVE': {
       const escapedDucks = state.ducks.filter((d) => d.state === 'escaped' || d.state === 'flying');
-      const shotDucks = state.ducks.filter((d) => d.state === 'falling' || d.state === 'shot');
+      const shotDucks = state.ducks.filter((d) => d.state === 'falling' || d.state === 'shot' || d.state === 'dead');
       const newMissed = state.stats.ducksMissed + escapedDucks.length;
 
       // Bad ducks that escape damage the player

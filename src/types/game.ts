@@ -20,7 +20,7 @@ export interface Duck {
   spawnTime: number; // Timestamp when duck appeared (for individual timeout)
 }
 
-export type DuckState = 'flying' | 'shot' | 'falling' | 'escaped';
+export type DuckState = 'flying' | 'shot' | 'falling' | 'escaped' | 'dead';
 export type Direction = 'left' | 'right' | 'top-left' | 'top-right';
 
 export type GameState = 'menu' | 'payment' | 'playing' | 'paused' | 'wave-end' | 'game-over' | 'victory';

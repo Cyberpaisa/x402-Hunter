@@ -161,8 +161,9 @@ export function updateFallingDuck(duck: Duck, deltaTime: number): Duck {
   const gravity = 15;
   const newY = duck.position.y + gravity * deltaTime * 60;
 
+  // When shot duck hits the ground, it's DEAD not escaped
   if (newY >= GAME_HEIGHT) {
-    return { ...duck, state: 'escaped' as DuckState };
+    return { ...duck, state: 'dead' as DuckState };
   }
 
   return {
